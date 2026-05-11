@@ -19,37 +19,7 @@ branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
 
-UUID_V7_FUNCTION_SQL = """
-CREATE OR REPLACE FUNCTION generate_uuid_v7()
-RETURNS uuid
-LANGUAGE plpgsql
-VOLATILE
-AS $$
-DECLARE
-    unix_ts_ms bigint;
-    random_bytes bytea;
-    bytes bytea;
-BEGIN
-    unix_ts_ms := floor(extract(epoch FROM clock_timestamp()) * 1000);
-    random_bytes := gen_random_bytes(10);
-    bytes := decode(lpad(to_hex(unix_ts_ms), 12, '0'), 'hex') || random_bytes;
-
-    -- Set RFC 9562 UUID version to 7 (0b0111xxxx).
-    bytes := set_byte(bytes, 6, (get_byte(bytes, 6) & 15) | 112);
-
-    -- Set RFC 4122 variant (0b10xxxxxx).
-    bytes := set_byte(bytes, 8, (get_byte(bytes, 8) & 63) | 128);
-
-    RETURN encode(bytes, 'hex')::uuid;
-END;
-$$;
-"""
-
-
 def upgrade() -> None:
-    op.execute("CREATE EXTENSION IF NOT EXISTS pgcrypto")
-    op.execute(UUID_V7_FUNCTION_SQL)
-
     op.create_table(
         "feeds",
         sa.Column(
@@ -57,7 +27,7 @@ def upgrade() -> None:
             postgresql.UUID(as_uuid=True),
             primary_key=True,
             nullable=False,
-            server_default=sa.text("generate_uuid_v7()"),
+            server_default=sa.text("uuidv7()"),
         ),
         sa.Column("name", sa.String(length=255), nullable=False),
         sa.Column("auth_credentials", sa.LargeBinary(), nullable=True),
@@ -104,7 +74,7 @@ def upgrade() -> None:
             postgresql.UUID(as_uuid=True),
             primary_key=True,
             nullable=False,
-            server_default=sa.text("generate_uuid_v7()"),
+            server_default=sa.text("uuidv7()"),
         ),
         sa.Column("feed_id", postgresql.UUID(as_uuid=True), nullable=False),
         sa.Column(
@@ -161,5 +131,3 @@ def downgrade() -> None:
     op.drop_table("ingestion_log")
     op.drop_table("stix_objects")
     op.drop_table("feeds")
-
-    op.execute("DROP FUNCTION IF EXISTS generate_uuid_v7()")

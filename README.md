@@ -36,7 +36,7 @@ docker compose down
 ### Notes
 - `DATABASE_URL` is passed via environment in Docker or loaded from `.env` for local development.
 - Baseline schema creates `feeds`, `stix_objects`, and `ingestion_log`.
-- `feeds.id` and `ingestion_log.id` use UUIDv7 defaults via `generate_uuid_v7()`.
+- `feeds.id` and `ingestion_log.id` use PostgreSQL built-in UUIDv7 defaults via `uuidv7()`.
 
 ## Run hello-docker using Docker Compose
 

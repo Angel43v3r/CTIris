@@ -26,7 +26,7 @@ alembic downgrade base
 
 ## UUIDv7
 
-The baseline migration installs a PostgreSQL function named `generate_uuid_v7()`.
+The baseline migration uses PostgreSQL built-in `uuidv7()`.
 `feeds.id` and `ingestion_log.id` default to this function.
 
 ## Future API service
