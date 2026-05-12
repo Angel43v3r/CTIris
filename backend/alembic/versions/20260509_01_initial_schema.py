@@ -31,7 +31,7 @@ def upgrade() -> None:
         ),
         sa.Column("name", sa.String(length=255), nullable=False),
         sa.Column("auth_credentials", sa.LargeBinary(), nullable=True),
-        sa.Column("url", sa.String(length=2048), nullable=False),
+        sa.Column("url", sa.String(length=2048), nullable=False, unique=True),
         sa.Column("enabled", sa.Boolean(), nullable=False, server_default=sa.text("true")),
         sa.Column("poll_frequency_min", sa.Integer(), nullable=False),
         sa.Column("last_polled_at", sa.DateTime(timezone=True), nullable=True),
