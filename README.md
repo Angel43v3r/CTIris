@@ -1,7 +1,43 @@
 # CTIris
 Capstone Project for North Seattle College CS BS Program
 
-<<<<<<< HEAD
+
+## Database migrations (Alembic + PostgreSQL)
+
+The migration workspace lives in `backend/`.
+
+### Automated setup with Docker
+
+Simply run:
+
+```bash
+docker compose up
+```
+
+This automatically:
+- Starts PostgreSQL
+- Builds the backend container
+- Waits for PostgreSQL to be ready
+- Runs `alembic upgrade head` to apply all migrations
+
+The containers will be running in the foreground. Press `Ctrl+C` to stop.
+
+To run in the background:
+
+```bash
+docker compose up -d
+```
+
+To stop:
+
+```bash
+docker compose down
+```
+
+### Notes
+- `DATABASE_URL` is passed via environment in Docker or loaded from `.env` for local development.
+- Baseline schema creates `feeds`, `stix_objects`, and `ingestion_log`.
+- `feeds.id` and `ingestion_log.id` use PostgreSQL built-in UUIDv7 defaults via `uuidv7()`.
 
 ## Frontend SetUp
 Tech stack: React, TypeScript, Vite, Material UI
@@ -91,7 +127,6 @@ npm run dev
 7. Go to your web browser and open http://localhost:5173 to view the app
 
 
-=======
 ## Run hello-docker using Docker Compose
 
 In the base directory:
@@ -112,4 +147,4 @@ docker compose down
 
 Notes:
 - Automatically stops and removes all containers.
->>>>>>> 763f855ccf6334b5e43c40d50790cd61af165d8f
+
