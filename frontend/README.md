@@ -112,9 +112,9 @@ In the folder you want to save your project in, run:
    docker run -d -p 5173:5173 --name my-frontend frontend
    ```
 
-*This will open http://localhost:5173*
+    *This will open http://localhost:5173*
 
-2. Go to your web browser and open http://localhost:5173 to view the app
+2. Go to your web browser and open http://localhost:5173 to view the app.
 
 ### Common Docker Compose Command
 | Command                     | Description                        |
