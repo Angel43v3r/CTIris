@@ -7,7 +7,7 @@ COPY package*.json ./
 RUN npm install
 
 # Copy the Vite configuration and source files
-COPY tsconfig.json ./
+COPY tsconfig.json tsconfig.app.json tsconfig.node.json ./
 COPY vite.config.ts ./
 COPY index.html ./
 COPY src/ ./src/
@@ -17,7 +17,7 @@ RUN npm run build
 
 # Stage 2: Runtime
 FROM node:22-slim
-WORKDIR app
+WORKDIR /app
 
 # Only copy the compiled output from stage 1
 COPY --from=builder /app/dist ./dist
