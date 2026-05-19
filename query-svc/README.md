@@ -1,6 +1,6 @@
 # query-svc
 
-Read-only API for accessing the CTIris database. Exposes STIX threat intelligence objects, feed configurations, and ingestion history over HTTP. Intended to be called by the API gateway — not directly by the frontend.
+Read-only API for accessing the CTIris database. Exposes STIX threat intelligence objects, feed configurations, and ingestion history over HTTP. Intended to be called by the API gateway, not directly by the frontend.
 
 Interactive API docs (Swagger UI) are available at `http://localhost:8000/docs` when the service is running.
 
@@ -27,13 +27,19 @@ query-svc/
 
 ## Running locally
 
-With Docker Compose from the project root:
+With Docker Compose from the project root. To bring up only query-svc and its dependencies:
 
 ```bash
-docker compose up query-svc
+docker compose up postgres backend-migrations query-svc
 ```
 
-The service will be available at `http://localhost:8000`. The Postgres instance and migrations must be running first (`backend-migrations` depends on `postgres`).
+Or to bring up the entire stack:
+
+```bash
+docker compose up
+```
+
+Add `--build` to either command if you have made code changes. The service will be available at `http://localhost:8000`.
 
 ## Endpoints
 
@@ -52,11 +58,16 @@ See `/docs` for full parameter details and example responses.
 
 ### Unit tests (no Docker or network required)
 
-_Not yet implemented._
+Install dev dependencies and run pytest:
 
-### End-to-end tests (Docker)
+```bash
+pip install -r requirements-dev.txt
+python -m pytest tests/ -v
+```
 
-_Not yet implemented._
+The DB dependency is mocked in all tests, no Postgres connection needed.
+
+Note: depending on your system, you may need `python3`/`pip3`, or `pytest` may be available directly as a command without the `python -m` prefix.
 
 ## TO DO
 

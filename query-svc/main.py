@@ -32,7 +32,7 @@ def get_db():
         yield conn
 
 
-# Converts UUID to String so JSON can handle them
+# Converts UUID to String so JSON can handle them (JSON has no UUID type)
 def _serialize(row: dict) -> dict:
     return {k: str(v) if isinstance(v, uuid.UUID) else v for k, v in row.items()}
 
