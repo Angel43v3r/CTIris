@@ -1,7 +1,7 @@
 """
 Database connection and query helpers for the ingestion service.
 
-The ingestion service now uses the shared ORM models from ``ctiris_db`` as
+The ingestion service now uses the shared ORM models from ``db-svc`` as
 the single source of truth for table definitions. This keeps the DB contract
 in one place while still letting the service build SQLAlchemy statements.
 """
@@ -14,7 +14,7 @@ from datetime import datetime
 import sqlalchemy as sa
 from sqlalchemy.dialects.postgresql import insert as pg_insert
 
-from ctiris_db.models import Feed, IngestionLog, StixObject
+from db-svc.models import Feed, IngestionLog, StixObject
 
 logger = logging.getLogger(__name__)
 

@@ -8,9 +8,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 WORKDIR /app
 
-COPY ctiris_db/ /opt/ctiris_db/
+COPY db-svc/ /opt/db-svc/
 COPY ingestion-svc/requirements.txt ./
-RUN pip install --no-cache-dir /opt/ctiris_db && pip install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir /opt/db-svc && pip install --no-cache-dir -r requirements.txt
 
 COPY ingestion-svc/ .
 

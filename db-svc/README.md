@@ -2,7 +2,7 @@
 
 This is a monorepo containing three Python packages:
 
-1. **ctiris_db** — Shared ORM models and Alembic migrations
+1. **db-svc** — Shared ORM models and Alembic migrations
 2. **api** — FastAPI microservice for feeds CRUD and dashboard queries
 3. **ingestion** — TAXII polling and STIX ingestion service (sibling project)
 
@@ -17,7 +17,7 @@ This is a monorepo containing three Python packages:
 
 ```bash
 # Install packages
-cd ctiris_db && pip install -e .
+cd db-svc && pip install -e .
 cd ../api && pip install -e ".[dev]"
 
 # Or using uv (recommended)
@@ -27,7 +27,7 @@ cd api && uv sync
 ### Run Migrations
 
 ```bash
-cd ctiris_db
+cd db-svc
 export DATABASE_URL="postgresql+psycopg://postgres:postgres@localhost:5432/ctiris"
 alembic upgrade head
 ```
@@ -57,8 +57,8 @@ The API will be available at http://localhost:8000 after migrations complete.
 
 ```
 ctiris/
-├── ctiris_db/              # Shared package: ORM models + migrations
-│   ├── src/ctiris_db/
+├── db-svc/              # Shared package: ORM models + migrations
+│   ├── src/db-svc/
 │   │   ├── base.py         # DeclarativeBase
 │   │   ├── models/         # ORM model definitions
 │   │   └── __init__.py
@@ -88,8 +88,8 @@ ctiris/
 
 ### Key Concepts
 
-- **ORM Models**: Live only in `ctiris_db/src/ctiris_db/models/`. Both `api/` and `ingestion/` import from here.
-- **Alembic**: Lives in `ctiris_db/`. Run migrations from the shared package; both services depend on the same schema.
+- **ORM Models**: Live only in `db-svc/src/db-svc/models/`. Both `api/` and `ingestion/` import from here.
+- **Alembic**: Lives in `db-svc/`. Run migrations from the shared package; both services depend on the same schema.
 - **Repositories**: All SQL queries live in `api/app/repositories/`. Routers call repos, get ORM objects, convert to Pydantic schemas.
 - **Crypto**: Shared `FERNET_KEY` env var encrypts/decrypts `auth_credentials` at the application layer. Database stores opaque ciphertext.
 - **Read-Only Tables**: `stix_objects` and `ingestion_log` are written only by the ingestion service; API serves read-only views.

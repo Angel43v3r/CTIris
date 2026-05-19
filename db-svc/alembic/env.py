@@ -1,6 +1,6 @@
 """Alembic environment for CTIris database migrations.
 
-This migration tool references ORM models in ctiris_db.models to detect schema changes.
+This migration tool references ORM models in db-svc.models to detect schema changes.
 """
 
 from __future__ import annotations
@@ -17,8 +17,8 @@ except ImportError:  # pragma: no cover
     load_dotenv = None
 
 # Import Base and models to populate metadata
-from ctiris_db import Base
-import ctiris_db.models  # noqa: F401 — ensures all model definitions are loaded
+from db-svc import Base
+import db-svc.models  # noqa: F401 — ensures all model definitions are loaded
 
 config = context.config
 

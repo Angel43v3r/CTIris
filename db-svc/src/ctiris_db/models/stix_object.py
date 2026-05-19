@@ -8,7 +8,7 @@ from sqlalchemy import DateTime, ForeignKey, Index, String, text
 from sqlalchemy.dialects.postgresql import JSONB, UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from ctiris_db.base import Base
+from db-svc.base import Base
 
 
 class StixObject(Base):
