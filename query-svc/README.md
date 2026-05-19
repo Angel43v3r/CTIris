@@ -18,11 +18,15 @@ Requests come in via FastAPI, SQLAlchemy builds and runs the query, and results 
 
 ```
 query-svc/
-├── main.py           # FastAPI app and all route handlers
-├── db.py             # Database connection and table definitions
-├── requirements.txt  # Python dependencies
-├── Dockerfile        # Container build instructions
-└── .dockerignore
+├── main.py                # FastAPI app and all route handlers
+├── db.py                  # Database connection and table definitions
+├── requirements.txt       # Python dependencies
+├── requirements-dev.txt   # Dev/test dependencies
+├── Dockerfile             # Container build instructions
+├── .dockerignore
+└── tests/
+    ├── conftest.py        # Shared pytest fixtures (mock DB override)
+    └── test_main.py       # Endpoint and serialization tests
 ```
 
 ## Running locally
