@@ -1,4 +1,4 @@
-"""CTIris — Self-Hosted STIX/TAXII Threat Intelligence Dashboard
+CTIris — Self-Hosted STIX/TAXII Threat Intelligence Dashboard
 
 This is a monorepo containing three Python packages:
 
@@ -112,5 +112,3 @@ Run tests from the `api/` directory:
 cd api
 pytest
 ```
-
-"""
