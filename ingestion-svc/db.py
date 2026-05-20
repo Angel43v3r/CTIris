@@ -14,7 +14,7 @@ from datetime import datetime
 import sqlalchemy as sa
 from sqlalchemy.dialects.postgresql import insert as pg_insert
 
-from db-svc.models import Feed, IngestionLog, StixObject
+from ctiris_db.models import Feed, IngestionLog, StixObject
 
 logger = logging.getLogger(__name__)
 

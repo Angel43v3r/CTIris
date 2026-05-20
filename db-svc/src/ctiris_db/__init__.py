@@ -1,5 +1,5 @@
 """CTIris shared database package."""
 
-from db-svc.base import Base
+from ctiris_db.base import Base
 
 __all__ = ["Base"]

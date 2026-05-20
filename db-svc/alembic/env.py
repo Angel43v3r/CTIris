@@ -17,8 +17,8 @@ except ImportError:  # pragma: no cover
     load_dotenv = None
 
 # Import Base and models to populate metadata
-from db-svc import Base
-import db-svc.models  # noqa: F401 — ensures all model definitions are loaded
+from ctiris_db.base import Base
+import ctiris_db.models  # noqa: F401 — ensures all model definitions are loaded
 
 config = context.config
 
