@@ -41,8 +41,31 @@ services:
     ports:
       - "8000:8000"
     depends_on:
+<<<<<<< Updated upstream
       db-svc:
         condition: service_completed_successfully
+=======
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "python -c 'import sqlalchemy, os; sqlalchemy.create_engine(os.environ[\"DATABASE_URL\"]).connect()'"]
+      interval: 5s
+      retries: 5
+      timeout: 5s
+      start_period: 5s
+>>>>>>> Stashed changes
 
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports: 
+      - "5173:5173"
+    depends_on:
+      query-svc:
+        condition: service_healthy
+
+        
 volumes:
   postgres-data:
