@@ -1,22 +1,20 @@
-import { Box, Container, Paper, Typography } from '@mui/material'
+import { AppBar, Box, Container, Typography } from '@mui/material';
+import { COLORS } from './constants/themeColors';
+import DashboardHeader from './components/DashboardHeader';
+import DashboardBody from './components/DashboardBody';
 
 function App() {
   return (
     <Container>
       {/* HEADER */}
-      <Box sx={{ textAlign: 'center', mt: 8 }}>
-        <Typography variant='h1' color='text.primary' align='center' gutterBottom>Welcome to CTIris!</Typography>
-      </Box>
+      <DashboardHeader />
 
-      {/* CONTENT */}
-      <Paper elevation={3} sx={{ p: 4 }}>
-        <Typography variant='h4' color='text.primary' align='center'>Content will go here!</Typography>
-
-      </Paper>
+      {/* BODY */}
+      <DashboardBody />
 
       {/* FOOTER */}
       <Box sx={{ mt: 4, p: 4 }}>
-        <Typography variant='subtitle1' color='text.secondary' align='center'>Footer will go here!</Typography>
+        <Typography variant='subtitle1' sx={{ color: COLORS.textOutline}} align='center'>Footer will go here!</Typography>
       </Box>
     </Container>
   )
