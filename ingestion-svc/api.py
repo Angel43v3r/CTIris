@@ -25,7 +25,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field, HttpUrl
 
 from db import get_engine, get_feed_by_id, insert_feed
-from sync import _sync_one_feed, run_sync
+from sync import sync_one_feed, run_sync
 
 logging.basicConfig(
     level=logging.INFO,
@@ -197,5 +197,5 @@ def trigger_sync(feed_id: str, background_tasks: BackgroundTasks):
     if feed is None:
         raise HTTPException(status_code=404, detail="Feed not found")
 
-    background_tasks.add_task(_sync_one_feed, engine, feed)
+    background_tasks.add_task(sync_one_feed, engine, feed)
     return {"status": "triggered", "feed_id": feed_id}

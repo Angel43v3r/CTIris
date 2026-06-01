@@ -278,14 +278,14 @@ class TestTriggerSync:
     def test_returns_202_for_valid_feed(self, client):
         with patch("api.get_engine"), \
              patch("api.get_feed_by_id", return_value=SAMPLE_FEED), \
-             patch("api._sync_one_feed"):
+             patch("api.sync_one_feed"):
             resp = client.post(f"/feeds/{FEED_ID}/sync")
         assert resp.status_code == 202
 
     def test_response_contains_feed_id(self, client):
         with patch("api.get_engine"), \
              patch("api.get_feed_by_id", return_value=SAMPLE_FEED), \
-             patch("api._sync_one_feed"):
+             patch("api.sync_one_feed"):
             resp = client.post(f"/feeds/{FEED_ID}/sync")
         data = resp.json()
         assert data["feed_id"] == FEED_ID
@@ -302,20 +302,20 @@ class TestTriggerSync:
         assert resp.status_code == 400
 
     def test_sync_is_dispatched_as_background_task(self, client):
-        """_sync_one_feed must be registered with BackgroundTasks, not called inline."""
+        """sync_one_feed must be registered with BackgroundTasks, not called inline."""
         with patch("api.get_engine"), \
              patch("api.get_feed_by_id", return_value=SAMPLE_FEED), \
-             patch("api._sync_one_feed") as mock_sync:
+             patch("api.sync_one_feed") as mock_sync:
             resp = client.post(f"/feeds/{FEED_ID}/sync")
         assert resp.status_code == 202
         # TestClient runs background tasks synchronously, so the mock is called
         mock_sync.assert_called_once()
 
     def test_sync_receives_correct_feed(self, client):
-        """_sync_one_feed must be called with the feed dict returned by get_feed_by_id."""
+        """sync_one_feed must be called with the feed dict returned by get_feed_by_id."""
         with patch("api.get_engine") as mock_engine, \
              patch("api.get_feed_by_id", return_value=SAMPLE_FEED), \
-             patch("api._sync_one_feed") as mock_sync:
+             patch("api.sync_one_feed") as mock_sync:
             client.post(f"/feeds/{FEED_ID}/sync")
         _, feed_arg = mock_sync.call_args.args
         assert feed_arg == SAMPLE_FEED

@@ -19,7 +19,7 @@ objects into the shared PostgreSQL database. Currently seeded with one feed
 | File | Purpose |
 |------|---------|
 | `scheduler.py` | Entry point — runs an immediate sync on startup, then schedules hourly repeats via APScheduler |
-| `sync.py` | Orchestration — queries enabled feeds, runs `_sync_one_feed` concurrently via `ThreadPoolExecutor` |
+| `sync.py` | Orchestration — queries enabled feeds, runs `sync_one_feed` concurrently via `ThreadPoolExecutor` |
 | `taxii_client.py` | TAXII 2.1 client — generic, works with any TAXII server via `server_url` / `collection_title` parameters |
 | `db.py` | Database helpers — mirrors Alembic schema for INSERT/UPDATE statements; owns no migrations |
 

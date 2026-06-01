@@ -3,7 +3,7 @@ Sync orchestration: one full cycle per enabled feed.
 
 ``run_sync`` is called by the scheduler on each interval tick and on container
 startup.  It queries all enabled feeds from the database, then calls
-``_sync_one_feed`` for each one independently so a failure on one feed does
+``sync_one_feed`` for each one independently so a failure on one feed does
 not prevent the others from running.
 
 Current state: only the MITRE ATT&CK feed exists (seeded automatically).
@@ -39,7 +39,7 @@ logger = logging.getLogger(__name__)
 _MAX_SYNC_WORKERS = 10
 
 
-def _sync_one_feed(engine: sa.Engine, feed: dict) -> None:
+def sync_one_feed(engine: sa.Engine, feed: dict) -> None:
     """Execute one complete ingestion cycle for a single feed.
 
     Steps:
@@ -163,7 +163,7 @@ def run_sync() -> None:
     """Sync all enabled feeds.
 
     Queries the ``feeds`` table for enabled rows, seeds the MITRE ATT&CK feed
-    if it does not yet exist, then calls ``_sync_one_feed`` for each row.
+    if it does not yet exist, then calls ``sync_one_feed`` for each row.
 
     A failure to reach the database (e.g. Postgres is not yet ready) is caught
     and logged so the APScheduler job does not crash — it will retry on the
@@ -186,7 +186,7 @@ def run_sync() -> None:
     logger.info("Syncing %d enabled feed(s)", len(feeds))
     workers = min(len(feeds), _MAX_SYNC_WORKERS)
     with ThreadPoolExecutor(max_workers=workers) as pool:
-        futures = {pool.submit(_sync_one_feed, engine, feed): feed for feed in feeds}
+        futures = {pool.submit(sync_one_feed, engine, feed): feed for feed in feeds}
         for future in as_completed(futures):
             feed = futures[future]
             try:
