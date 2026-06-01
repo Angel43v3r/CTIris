@@ -5,6 +5,10 @@ import DashboardTab from './DashboardTab';
 import FeedsTab from './FeedsTab';
 import StixBrowser from './StixBrowser';
 
+/**
+ * Reusable section heading with an educational ? tooltip badge.
+ * Used by all three tab panels so the badge style stays consistent.
+ */
 function SectionHeader({ title, tooltip }: { title: string; tooltip: string }) {
   return (
     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 3 }}>
@@ -32,6 +36,17 @@ function SectionHeader({ title, tooltip }: { title: string; tooltip: string }) {
   );
 }
 
+/**
+ * Main content area — three-tab layout: Dashboard, Feeds, STIX Objects.
+ *
+ * Tab panels are always mounted and hidden with CSS (display: none) rather
+ * than conditionally rendered. This means data loaded in one tab is still
+ * in memory when you switch away and back, avoiding redundant API calls.
+ *
+ * selectedType wires the Dashboard stat cards to the STIX browser — clicking
+ * a card calls navigateToType(type), which switches to the STIX Objects tab
+ * and passes the type as the initial filter.
+ */
 export default function DashboardBody() {
   const [tab, setTab] = useState(0);
   const [selectedType, setSelectedType] = useState('');
