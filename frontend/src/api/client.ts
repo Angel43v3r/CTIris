@@ -1,4 +1,4 @@
-const BASE = 'http://localhost/api';
+const BASE = (import.meta.env.VITE_API_BASE as string | undefined) ?? 'http://localhost/api';
 
 export interface StixObject {
   stix_id: string;

@@ -4,6 +4,10 @@ import { api } from '../api/client';
 import type { StixObject } from '../api/client';
 import { COLORS } from '../constants/themeColors';
 
+interface Props {
+  relationships: StixObject[];
+}
+
 interface ThreatEntry {
   stix_id: string;
   name: string;
@@ -20,26 +24,23 @@ function typeColor(type: string) {
   return TYPE_COLORS[type] ?? COLORS.accentSecondary;
 }
 
-export default function MostActiveThreats() {
-  const [relationships, setRelationships] = useState<StixObject[]>([]);
+export default function MostActiveThreats({ relationships }: Props) {
   const [entities, setEntities] = useState<StixObject[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     Promise.all([
-      api.stix('relationship', 1000),
       api.stix('threat-actor', 1000),
       api.stix('intrusion-set', 1000),
     ])
-      .then(([rels, actors, sets]) => {
-        setRelationships(rels);
-        setEntities([...actors, ...sets]);
-      })
-      .catch(() => {})
+      .then(([actors, sets]) => setEntities([...actors, ...sets]))
+      .catch(e => setError(String(e)))
       .finally(() => setLoading(false));
   }, []);
 
   if (loading) return <Box sx={{ display: 'flex', justifyContent: 'center', p: 4 }}><CircularProgress sx={{ color: COLORS.accentSecondary }} /></Box>;
+  if (error) return <Typography variant="body2" sx={{ color: 'error.main', fontFamily: 'monospace' }}>Failed to load: {error}</Typography>;
 
   if (!relationships.length) {
     return (

@@ -82,3 +82,62 @@ Frontend dev (with Docker stack already running):
 ```bash
 cd frontend && npm install && npm run dev
 ```
+## Extra fixes we need to do
+```yaml
+volumes:
+  - ./frontend:/app
+  - /app/node_modules  # may not shadow correctly on Mac/Windows Docker Desktop
+```
+
+On a fresh clone with no host `node_modules`, Docker Desktop on Mac/Windows may expose an empty `/app/node_modules`, causing `Cannot find module vite`. Consider a multi-stage Dockerfile build instead of the bind-mount + anonymous volume pattern.
+
+---
+
+## 6. `StixData.tsx:87` — No guard before `new Date(r.created)`
+
+```tsx
+// current
+{new Date(r.created).toLocaleDateString()}
+
+// fix
+{r.created ? new Date(r.created).toLocaleDateString() : '-'}
+```
+
+If both `stix_created` and `ingested_at` are absent from the API response, `r.created` is `undefined` and `new Date(undefined)` renders the literal string `"Invalid Date"` in the cell.
+
+---
+
+## 7. `AttackTechniques.tsx:32` — Row key uses `r.name` instead of unique `r.id`
+
+```tsx
+// current
+<TableRow key={r.name} ...>
+
+// fix
+<TableRow key={r.id} ...>
+```
+
+`r.id` (MITRE technique ID e.g. `T1566`) is unique and already available. If real data with duplicate technique names is loaded, React will mis-diff rows.
+
+---
+
+## 8. `App.tsx:8` — `Container` replaced with `Box` loses maxWidth centering
+
+```tsx
+// current — stretches to 100% on wide viewports
+<Box>
+
+// fix
+<Container>   // or: <Box sx={{ maxWidth: 'lg', mx: 'auto' }}>
+```
+
+MUI `Container` provides responsive `maxWidth` and `margin: auto`. The plain `Box` replacement causes the dashboard to stretch full-width on wide monitors.
+
+---
+
+## 9 & 10. `StatCard.tsx` + `DashboardBody.tsx` — Hardcoded placeholder cards
+
+`StatCard` accepts no props; all 8 instances render `"8"` / `"Total Malware"`. For the UI PR:
+- Add `value: string | number` and `label: string` props to `StatCard`
+- Replace the 8 identical `<StatCard />` elements in `DashboardBody` with a config array + `.map()`
+- Add `key` prop to each mapped card

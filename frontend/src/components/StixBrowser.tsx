@@ -9,28 +9,33 @@ import { api } from '../api/client';
 import type { StixObject } from '../api/client';
 import { COLORS } from '../constants/themeColors';
 
-const STIX_TYPE_OPTIONS = [
-  'attack-pattern', 'campaign', 'course-of-action', 'identity',
-  'indicator', 'intrusion-set', 'malware', 'observed-data',
-  'relationship', 'sighting', 'threat-actor', 'tool', 'vulnerability',
-];
+import { STIX_TYPE_KEYS } from '../constants/stixTypes';
 
 function getName(obj: StixObject): string {
   const name = (obj.properties as { name?: string }).name;
   return name ?? obj.stix_id;
 }
 
-function formatDate(d: string) {
+function formatDate(d: string | null | undefined) {
+  if (!d) return '—';
   return new Date(d).toLocaleString();
 }
 
-export default function StixBrowser() {
+interface Props {
+  defaultType?: string;
+}
+
+export default function StixBrowser({ defaultType = '' }: Props) {
   const [objects, setObjects] = useState<StixObject[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [typeFilter, setTypeFilter] = useState('');
+  const [typeFilter, setTypeFilter] = useState(defaultType);
   const [search, setSearch] = useState('');
   const [selected, setSelected] = useState<StixObject | null>(null);
+
+  useEffect(() => {
+    setTypeFilter(defaultType);
+  }, [defaultType]);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -91,7 +96,7 @@ export default function StixBrowser() {
             }}
           >
             <MenuItem value="">All types</MenuItem>
-            {STIX_TYPE_OPTIONS.map(t => (
+            {STIX_TYPE_KEYS.map(t => (
               <MenuItem key={t} value={t} sx={{ fontFamily: 'monospace', fontSize: '0.85rem' }}>{t}</MenuItem>
             ))}
           </Select>
