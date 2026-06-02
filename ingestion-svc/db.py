@@ -125,6 +125,38 @@ def get_enabled_feeds(conn: sa.Connection) -> list[dict]:
     return [dict(row) for row in rows]
 
 
+def get_due_feeds(conn: sa.Connection) -> list[dict]:
+    """Return enabled feeds that are due for their next poll.
+
+    A feed is due when:
+    - ``last_polled_at`` is ``NULL`` (never synced), or
+    - ``last_polled_at`` + ``poll_frequency_min`` minutes <= now.
+
+    Args:
+        conn: An open SQLAlchemy connection.
+
+    Returns:
+        List of feed dicts for feeds that should be synced now.
+    """
+    due = sa.or_(
+        feeds_table.c.last_polled_at.is_(None),
+        feeds_table.c.last_polled_at
+        + (feeds_table.c.poll_frequency_min * sa.text("INTERVAL '1 minute'"))
+        <= sa.func.now(),
+    )
+    rows = conn.execute(
+        sa.select(
+            feeds_table.c.id,
+            feeds_table.c.name,
+            feeds_table.c.url,
+            feeds_table.c.poll_frequency_min,
+            feeds_table.c.last_polled_at,
+            feeds_table.c.auth_credentials,
+        ).where(feeds_table.c.enabled == sa.true(), due)
+    ).mappings().fetchall()
+    return [dict(row) for row in rows]
+
+
 def get_feed_by_id(conn: sa.Connection, feed_id: uuid.UUID) -> dict | None:
     """Return a single feed row by its UUID, or ``None`` if not found.
 

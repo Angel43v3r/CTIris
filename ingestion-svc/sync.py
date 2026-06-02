@@ -23,7 +23,7 @@ from cryptography.fernet import Fernet, InvalidToken
 
 from db import (
     ensure_mitre_feed,
-    get_enabled_feeds,
+    get_due_feeds,
     get_engine,
     update_feed_status,
     upsert_objects,
@@ -174,7 +174,7 @@ def run_sync() -> None:
     try:
         with engine.begin() as conn:
             ensure_mitre_feed(conn)
-            feeds = get_enabled_feeds(conn)
+            feeds = get_due_feeds(conn)
     except Exception as exc:  # pylint: disable=broad-exception-caught
         logger.exception("Failed to load feeds from database: %s", exc)
         return

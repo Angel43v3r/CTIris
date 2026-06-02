@@ -31,9 +31,6 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-SYNC_INTERVAL_HOURS = 1
-
-
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Start the background scheduler alongside uvicorn, shut it down on exit."""
@@ -44,15 +41,13 @@ async def lifespan(app: FastAPI):
     scheduler = BackgroundScheduler()
     scheduler.add_job(
         run_sync,
-        trigger=IntervalTrigger(hours=SYNC_INTERVAL_HOURS),
-        id="mitre_sync",
-        name="MITRE ATT&CK sync",
+        trigger=IntervalTrigger(minutes=1),
+        id="feed_sync",
+        name="Feed due-check sync",
         replace_existing=True,
     )
     scheduler.start()
-    logger.info(
-        "Background scheduler started — syncing every %d hour(s)", SYNC_INTERVAL_HOURS
-    )
+    logger.info("Background scheduler started — checking for due feeds every minute")
 
     yield
 
