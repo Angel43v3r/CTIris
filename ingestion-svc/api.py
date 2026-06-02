@@ -41,13 +41,15 @@ async def lifespan(app: FastAPI):
     scheduler = BackgroundScheduler()
     scheduler.add_job(
         run_sync,
-        trigger=IntervalTrigger(minutes=1),
+        trigger=IntervalTrigger(minutes=5),
         id="feed_sync",
         name="Feed due-check sync",
         replace_existing=True,
+        coalesce=True,
+        misfire_grace_time=300,
     )
     scheduler.start()
-    logger.info("Background scheduler started — checking for due feeds every minute")
+    logger.info("Background scheduler started — checking for due feeds every 5 minutes")
 
     yield
 
