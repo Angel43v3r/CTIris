@@ -91,14 +91,16 @@ export const api = {
   stixCounts: () => get<Record<string, number>>('/stix/counts'),
 
   /**
-   * Fetch the top entities of a given type ranked by relationship count.
+   * Fetch the top entities ranked by relationship count.
+   * Accepts one type or an array to rank across multiple types in one query.
    * Runs a full SQL join — not capped by the 1000-object limit.
-   * @param type - STIX type to rank (e.g. 'malware', 'threat-actor').
+   * @param type - STIX type or array of types (e.g. ['threat-actor', 'intrusion-set']).
    * @param limit - Number of top entries. Default 8, max 50.
    */
-  topByRelationships: (type: string, limit = 8) => {
-    const p = new URLSearchParams({ type, limit: String(limit) });
-    return get<{ stix_id: string; name: string | null; relationship_count: number }[]>(
+  topByRelationships: (type: string | string[], limit = 8) => {
+    const p = new URLSearchParams({ limit: String(limit) });
+    (Array.isArray(type) ? type : [type]).forEach(t => p.append('type', t));
+    return get<{ stix_id: string; type: string; name: string | null; relationship_count: number }[]>(
       `/stix/top-by-relationships?${p}`
     );
   },

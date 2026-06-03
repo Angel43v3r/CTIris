@@ -27,17 +27,10 @@ export default function MostActiveThreats() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    Promise.all([
-      api.topByRelationships('threat-actor', 10),
-      api.topByRelationships('intrusion-set', 10),
-    ])
-      .then(([actors, sets]) => {
-        const merged: ThreatEntry[] = [
-          ...actors.map(r => ({ stix_id: r.stix_id, name: r.name ?? r.stix_id, type: 'threat-actor', count: r.relationship_count })),
-          ...sets.map(r => ({ stix_id: r.stix_id, name: r.name ?? r.stix_id, type: 'intrusion-set', count: r.relationship_count })),
-        ];
-        setTop(merged.sort((a, b) => b.count - a.count).slice(0, 10));
-      })
+    api.topByRelationships(['threat-actor', 'intrusion-set'], 10)
+      .then(rows => setTop(
+        rows.map(r => ({ stix_id: r.stix_id, name: r.name ?? r.stix_id, type: r.type, count: r.relationship_count }))
+      ))
       .catch(e => setError(String(e)))
       .finally(() => setLoading(false));
   }, []);
