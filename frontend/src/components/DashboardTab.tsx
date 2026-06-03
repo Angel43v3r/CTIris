@@ -21,19 +21,12 @@ interface Props {
  */
 export default function DashboardTab({ onTypeClick }: Props) {
   const [counts, setCounts] = useState<Record<string, number>>({});
-  const [relationships, setRelationships] = useState<import('../api/client').StixObject[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    Promise.all([
-      api.stixCounts(),
-      api.stix('relationship', 1000),
-    ])
-      .then(([countsMap, relationshipObjs]) => {
-        setCounts(countsMap);
-        setRelationships(relationshipObjs);
-      })
+    api.stixCounts()
+      .then(setCounts)
       .catch(e => setError(String(e)))
       .finally(() => setLoading(false));
   }, []);
@@ -95,10 +88,7 @@ export default function DashboardTab({ onTypeClick }: Props) {
         ))}
       </Grid>
 
-      {/* ── WIDGETS ───────────────────────────────────────────────────────────
-          Relationship data fetched above is passed as a prop to both widgets
-          so they share one fetch rather than each making a duplicate request.
-      ──────────────────────────────────────────────────────────────────── */}
+      {/* ── WIDGETS ─────────────────────────────────────────────────────────── */}
       <Grid container spacing={3} sx={{ mt: 2 }}>
         {/* Most Active Threats — ranked list of threat-actors and intrusion-sets */}
         <Grid item xs={12} md={6}>
@@ -107,14 +97,14 @@ export default function DashboardTab({ onTypeClick }: Props) {
             tooltip="Threat actors and intrusion sets ranked by how many STIX relationship objects reference them. A relationship connects two STIX objects — for example, 'Lazarus Group uses Cobalt Strike' or 'APT29 targets Finance'. The more relationships an entity appears in, the more documented activity it has."
             gutterBottom={false}
           />
-          <MostActiveThreats relationships={relationships} />
+          <MostActiveThreats />
         </Grid>
 
-        {/* Most Active Malware — radial bar chart of malware by relationship count */}
+        {/* Most Active Malware — ranked list of malware by relationship count */}
         <Grid item xs={12} md={6}>
           <SectionHeader
             title="MOST ACTIVE MALWARE"
-            tooltip="Malware families ranked by how many STIX relationships reference them. Each ring represents one malware family — the longer the arc, the more it appears across threat intelligence reports. Useful for spotting which malware is most commonly linked to attacks in your feeds."
+            tooltip="Malware families ranked by how many STIX relationships reference them. The longer the bar, the more it appears across threat intelligence reports. Useful for spotting which malware is most commonly linked to attacks in your feeds."
             gutterBottom={false}
           />
           <MostActiveMalware />
