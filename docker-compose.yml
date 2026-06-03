@@ -39,7 +39,9 @@ services:
         condition: service_completed_successfully
 
   query-svc:
-    build: ./query-svc
+    build:
+      context: .
+      dockerfile: query-svc/Dockerfile
     environment:
       DATABASE_URL: postgresql+psycopg://postgres:postgres@postgres:5432/ctiris
       ALLOWED_ORIGIN: http://localhost:5173
