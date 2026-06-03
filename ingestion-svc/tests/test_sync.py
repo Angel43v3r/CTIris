@@ -242,19 +242,19 @@ class TestRunSync:
 
         with patch("sync.get_engine", return_value=engine), \
              patch("sync.ensure_mitre_feed") as ensure_mock, \
-             patch("sync.get_enabled_feeds", return_value=[]), \
+             patch("sync.get_due_feeds", return_value=[]), \
              patch("sync.sync_one_feed"):
             run_sync()
 
         ensure_mock.assert_called_once()
 
-    def test_calls_get_enabled_feeds(self):
+    def test_calls_get_due_feeds(self):
         """run_sync must query the feeds table to discover what to sync."""
         engine, _ = self._make_engine_mock()
 
         with patch("sync.get_engine", return_value=engine), \
              patch("sync.ensure_mitre_feed"), \
-             patch("sync.get_enabled_feeds", return_value=[]) as feeds_mock, \
+             patch("sync.get_due_feeds", return_value=[]) as feeds_mock, \
              patch("sync.sync_one_feed"):
             run_sync()
 
@@ -268,7 +268,7 @@ class TestRunSync:
 
         with patch("sync.get_engine", return_value=engine), \
              patch("sync.ensure_mitre_feed"), \
-             patch("sync.get_enabled_feeds", return_value=[feed1, feed2]), \
+             patch("sync.get_due_feeds", return_value=[feed1, feed2]), \
              patch("sync.sync_one_feed") as sync_mock:
             run_sync()
 
@@ -283,7 +283,7 @@ class TestRunSync:
 
         with patch("sync.get_engine", return_value=engine), \
              patch("sync.ensure_mitre_feed"), \
-             patch("sync.get_enabled_feeds", return_value=[]), \
+             patch("sync.get_due_feeds", return_value=[]), \
              patch("sync.sync_one_feed") as sync_mock:
             run_sync()
 
@@ -323,7 +323,7 @@ class TestRunSync:
 
         with patch("sync.get_engine", return_value=engine), \
              patch("sync.ensure_mitre_feed"), \
-             patch("sync.get_enabled_feeds", return_value=[feed1, feed2]), \
+             patch("sync.get_due_feeds", return_value=[feed1, feed2]), \
              patch("sync.sync_one_feed", side_effect=maybe_raise):
             run_sync()  # must not raise — exception is caught in the futures loop
 
