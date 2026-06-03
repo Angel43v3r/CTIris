@@ -94,6 +94,23 @@ def list_stix(
     return [_serialize(dict(row)) for row in rows]
 
 
+@app.get("/stix/counts")
+def count_stix(conn=Depends(get_db)):
+    """Return the total number of STIX objects in the database, grouped by type.
+
+    Returns:
+        Dict mapping each STIX type to its count, e.g. {"malware": 729, "relationship": 21025}.
+
+    Example:
+        GET /stix/counts
+    """
+    rows = conn.execute(
+        sa.select(stix_objects_table.c.type, sa.func.count().label("count"))
+        .group_by(stix_objects_table.c.type)
+    ).mappings().fetchall()
+    return {row["type"]: row["count"] for row in rows}
+
+
 @app.get("/stix/{stix_id}")
 def get_stix(stix_id: str, conn=Depends(get_db)):
     """Return a single STIX object by its ID.

@@ -87,6 +87,9 @@ export const api = {
     return get<StixObject[]>(`/stix?${p}`, signal);
   },
 
+  /** Fetch object counts grouped by STIX type — one DB query, no limit. */
+  stixCounts: () => get<Record<string, number>>('/stix/counts'),
+
   /** Fetch a single STIX object by its full ID (e.g. `malware--uuid`). */
   stixById: (id: string) => get<StixObject>(`/stix/${encodeURIComponent(id)}`),
 
