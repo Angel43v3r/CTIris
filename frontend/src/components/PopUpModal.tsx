@@ -16,10 +16,7 @@ export default function PopUpModal({ stixId, onClose }: Props) {
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
-        if (!stixId) {
-            setStix(null);
-            return;
-        }
+        if (!stixId) return;
 
         const controller = new AbortController();
 
