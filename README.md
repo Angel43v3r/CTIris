@@ -74,7 +74,7 @@ Notes:
 |---|---|---|
 | `postgres` | PostgreSQL database storing all CTI data | — |
 | `db-svc` | Runs Alembic migrations on startup | [db-svc/README.md](db-svc/README.md) |
-| `ingestion-svc` | Polls TAXII feeds and ingests STIX objects into Postgres | [ingestion-svc/README.md](ingestion-svc/README.md) |
+| `ingestion-svc` | Polls MITRE ATT&CK TAXII, upserts STIX objects into Postgres | [ingestion-svc/README.md](ingestion-svc/README.md) |
 | `query-svc` | FastAPI read-only API serving the frontend | [query-svc/README.md](query-svc/README.md) |
 | `gateway` | Nginx reverse proxy — routes `/api/*` to `query-svc` | — |
 | `frontend` | React + TypeScript dashboard | [frontend/README.md](frontend/README.md) |
