@@ -39,8 +39,6 @@ export default function Heatmap() {
 
     useEffect(() => {
         const controller = new AbortController();
-        setLoading(true);
-        setError(null);
 
         // Pulls raw objects matching type "location" from your live database
         api.stix('location', 1000, 0, controller.signal)

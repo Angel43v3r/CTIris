@@ -21,10 +21,6 @@ export default function PopUpModal({ stixId, onClose }: Props) {
             return;
         }
 
-        setLoading(true);
-        setStix(null);
-        setError(null);
-
         const controller = new AbortController();
 
         api.stixById(stixId, controller.signal)
