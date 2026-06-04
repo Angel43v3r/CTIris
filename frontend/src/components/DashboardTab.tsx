@@ -9,17 +9,19 @@ import HelpBadge from './HelpBadge';
 import SectionHeader from './SectionHeader';
 import MostActiveThreats from './MostActiveThreats';
 import MostActiveMalware from './MostActiveMalware';
+import Heatmap from './HeatMap';
 
 interface Props {
   /** Called when a stat card is clicked. Switches to the STIX browser filtered to that type. */
   onTypeClick: (type: string) => void;
+  onSearchClick?: (query: string, type: string) => void;
 }
 
 /**
  * Dashboard tab — stat cards and activity widgets.
  *
  */
-export default function DashboardTab({ onTypeClick }: Props) {
+export default function DashboardTab({ onTypeClick, onSearchClick }: Props) {
   const [counts, setCounts] = useState<Record<string, number>>({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -50,19 +52,21 @@ export default function DashboardTab({ onTypeClick }: Props) {
       ──────────────────────────────────────────────────────────────────── */}
       <Grid container spacing={2}>
         {STIX_TYPES.map(t => (
-          <Grid item xs={6} sm={4} md={3} key={t.key}>
+          <Grid item xs={4} sm={3} md={2} key={t.key}>
             <Card
               onClick={() => onTypeClick(t.key)}
               sx={{
-                background: 'linear-gradient(105deg, #402e68 0%, #7f5bce 100%)',
-                border: '1px solid rgba(255,255,255,0.07)',
+                background: COLORS.cardBackground,
+                backdropFilter: 'blur(10px)',
+                border: `1px solid ${COLORS.cardBorder}`,
                 borderRadius: 2,
                 position: 'relative',
                 cursor: 'pointer',
                 transition: 'transform 0.15s, box-shadow 0.15s',
                 '&:hover': {
                   transform: 'translateY(-2px)',
-                  boxShadow: '0 4px 20px rgba(127,91,206,0.4)',
+                  boxShadow: `0 4px 20px ${COLORS.hoverBoxShadow}`,
+                  borderColor: COLORS.dataContainerBorderHover,
                 },
               }}
             >
@@ -88,6 +92,16 @@ export default function DashboardTab({ onTypeClick }: Props) {
         ))}
       </Grid>
 
+      {/* ── HEATMAP ───────────────────────────────────────────────────────────*/}
+      <Box sx={{ mt: 3 }}>
+        <SectionHeader
+          title="GLOBAL THREAT CONCENTRATION HEATMAP"
+          tooltip="Shows a global density of where malicious threat activity is originating based on mapped STIX location objects"
+          gutterBottom={false}
+        />
+        <Heatmap />
+      </Box>
+
       {/* ── WIDGETS ─────────────────────────────────────────────────────────── */}
       <Grid container spacing={3} sx={{ mt: 2 }}>
         {/* Most Active Threats — ranked list of threat-actors and intrusion-sets */}
@@ -97,7 +111,7 @@ export default function DashboardTab({ onTypeClick }: Props) {
             tooltip="Threat actors and intrusion sets ranked by how many STIX relationship objects reference them. A relationship connects two STIX objects — for example, 'Lazarus Group uses Cobalt Strike' or 'APT29 targets Finance'. The more relationships an entity appears in, the more documented activity it has."
             gutterBottom={false}
           />
-          <MostActiveThreats />
+          <MostActiveThreats onItemClick={(name) => onSearchClick ? onSearchClick(name, 'threat-actor') : onTypeClick('threat-actor')} />
         </Grid>
 
         {/* Most Active Malware — ranked list of malware by relationship count */}
@@ -107,7 +121,7 @@ export default function DashboardTab({ onTypeClick }: Props) {
             tooltip="Malware families ranked by how many STIX relationships reference them. The longer the bar, the more it appears across threat intelligence reports. Useful for spotting which malware is most commonly linked to attacks in your feeds."
             gutterBottom={false}
           />
-          <MostActiveMalware />
+          <MostActiveMalware onItemClick={(name) => onSearchClick ? onSearchClick(name, 'malware') : onTypeClick('malware')} />
         </Grid>
       </Grid>
     </Box>

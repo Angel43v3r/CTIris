@@ -10,7 +10,6 @@ import type { StixObject } from '../api/client';
 import { COLORS } from '../constants/themeColors';
 import LoadingSpinner from './LoadingSpinner';
 import ErrorDisplay from './ErrorDisplay';
-
 import { STIX_TYPE_KEYS } from '../constants/stixTypes';
 
 /**
@@ -113,8 +112,8 @@ export default function StixBrowser({ defaultType = '' }: Props) {
             flex: 1,
             minWidth: 200,
             '& input': { color: COLORS.textPrimary },
-            '& .MuiOutlinedInput-root fieldset': { borderColor: 'rgba(255,255,255,0.15)' },
-            '& .MuiOutlinedInput-root:hover fieldset': { borderColor: 'rgba(255,255,255,0.3)' },
+            '& .MuiOutlinedInput-root fieldset': { borderColor: COLORS.dataContainerBorder },
+            '& .MuiOutlinedInput-root:hover fieldset': { borderColor: COLORS.dataContainerBorderHover },
           }}
         />
         <FormControl size="small" sx={{ minWidth: 180 }}>
@@ -123,9 +122,18 @@ export default function StixBrowser({ defaultType = '' }: Props) {
             value={typeFilter}
             label="Type"
             onChange={e => setTypeFilter(e.target.value)}
+            MenuProps={{
+              PaperProps: {
+                sx: {
+                  bgcolor: COLORS.headerBackground,
+                  color: COLORS.textPrimary,
+                  border: `1px solid ${COLORS.dataContainerBorder}`,
+                }
+              }
+            }}
             sx={{
               color: COLORS.textPrimary,
-              '& .MuiOutlinedInput-notchedOutline': { borderColor: 'rgba(255,255,255,0.15)' },
+              '& .MuiOutlinedInput-notchedOutline': { borderColor: COLORS.dataContainerBorder },
               '& .MuiSvgIcon-root': { color: COLORS.textMuted },
             }}
           >
@@ -148,14 +156,14 @@ export default function StixBrowser({ defaultType = '' }: Props) {
           </Typography>
           <TableContainer component={Paper} sx={{
             backgroundColor: COLORS.headerBackground,
-            border: '1px solid rgba(255,255,255,0.07)',
+            border: `1px solid ${COLORS.dataContainerBorder}`,
             borderRadius: 2,
           }}>
-            <Table size="small" sx={{ '& .MuiTableCell-root': { borderBottom: '1px solid rgba(255,255,255,0.08)' } }}>
+            <Table size="small" sx={{ '& .MuiTableCell-root': { borderBottom: `1px solid ${COLORS.dataContainerBorder}` } }}>
               <TableHead>
                 <TableRow>
                   {['Type', 'Name', 'ID', 'Ingested'].map(h => (
-                    <TableCell key={h} sx={{ color: COLORS.textOutline, fontWeight: 'bold', letterSpacing: 1, textTransform: 'uppercase', fontSize: '0.7rem' }}>
+                    <TableCell key={h} sx={{ color: COLORS.textQuaternary, fontWeight: 'bold', letterSpacing: 1, textTransform: 'uppercase', fontSize: '0.7rem' }}>
                       {h}
                     </TableCell>
                   ))}
@@ -166,9 +174,9 @@ export default function StixBrowser({ defaultType = '' }: Props) {
                   <TableRow
                     key={obj.stix_id}
                     onClick={() => setSelected(obj)}
-                    sx={{ cursor: 'pointer', '&:hover': { backgroundColor: 'rgba(0,255,255,0.05)' } }}
+                    sx={{ cursor: 'pointer', '&:hover': { backgroundColor: COLORS.cardBackground, boxShadow: `0 4px 20px ${COLORS.hoverBoxShadow}` } }}
                   >
-                    <TableCell sx={{ color: COLORS.accentSecondary, fontFamily: 'monospace', fontSize: '0.75rem', whiteSpace: 'nowrap' }}>
+                    <TableCell sx={{ color: COLORS.textSecondary, fontFamily: 'monospace', fontSize: '0.75rem', whiteSpace: 'nowrap' }}>
                       {obj.type}
                     </TableCell>
                     <TableCell sx={{ color: COLORS.textPrimary, maxWidth: 260, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
@@ -197,7 +205,7 @@ export default function StixBrowser({ defaultType = '' }: Props) {
             width: { xs: '100%', sm: 520 },
             bgcolor: COLORS.backgroundDefault,
             p: 3,
-            borderLeft: `2px solid ${COLORS.accentSecondary}`,
+            borderLeft: `2px solid ${COLORS.textQuaternary}`,
           },
         }}
       >
@@ -205,7 +213,7 @@ export default function StixBrowser({ defaultType = '' }: Props) {
           <>
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
               <Box sx={{ flex: 1, mr: 1 }}>
-                <Typography variant="overline" sx={{ color: COLORS.accentSecondary, fontFamily: 'monospace', letterSpacing: 2 }}>
+                <Typography variant="overline" sx={{ color: COLORS.textQuaternary, fontFamily: 'monospace', letterSpacing: 2 }}>
                   {selected.type}
                 </Typography>
                 <Typography variant="h6" sx={{ color: COLORS.textPrimary, lineHeight: 1.3 }}>
@@ -228,7 +236,7 @@ export default function StixBrowser({ defaultType = '' }: Props) {
                 bgcolor: COLORS.backgroundContainer,
                 p: 2,
                 borderRadius: 1,
-                border: '1px solid rgba(255,255,255,0.07)',
+                border: `1px solid ${COLORS.dataContainerBorder}`,
                 whiteSpace: 'pre-wrap',
                 wordBreak: 'break-word',
                 fontFamily: 'monospace',

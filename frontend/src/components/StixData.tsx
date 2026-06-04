@@ -60,10 +60,10 @@ export default function StixData() {
             }} size="small" aria-label="a dense table">
                 <TableHead>
                     <TableRow>
-                        <TableCell sx={{ color: COLORS.textOutline, fontSize: '12px', fontWeight: 'bold', letterSpacing: 1, textTransform: 'uppercase' }}>Type</TableCell>
-                        <TableCell sx={{ color: COLORS.textOutline, fontSize: '12px',fontWeight: 'bold', letterSpacing: 1, textTransform: 'uppercase' }}>Name</TableCell>
-                        <TableCell sx={{ color: COLORS.textOutline, fontSize: '12px',fontWeight: 'bold', letterSpacing: 1, textTransform: 'uppercase' }}>Description</TableCell>
-                        <TableCell sx={{ color: COLORS.textOutline, fontSize: '12px',fontWeight: 'bold', letterSpacing: 1, textTransform: 'uppercase' }}>Created</TableCell>
+                        <TableCell sx={{ color: COLORS.textTertiary, fontSize: '12px', fontWeight: 'bold', letterSpacing: 1, textTransform: 'uppercase' }}>Type</TableCell>
+                        <TableCell sx={{ color: COLORS.textTertiary, fontSize: '12px',fontWeight: 'bold', letterSpacing: 1, textTransform: 'uppercase' }}>Name</TableCell>
+                        <TableCell sx={{ color: COLORS.textTertiary, fontSize: '12px',fontWeight: 'bold', letterSpacing: 1, textTransform: 'uppercase' }}>Description</TableCell>
+                        <TableCell sx={{ color: COLORS.textTertiary, fontSize: '12px',fontWeight: 'bold', letterSpacing: 1, textTransform: 'uppercase' }}>Created</TableCell>
                     </TableRow>
                 </TableHead>
                 <TableBody>
