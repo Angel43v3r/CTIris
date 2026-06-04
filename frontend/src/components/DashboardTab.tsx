@@ -34,7 +34,11 @@ export default function DashboardTab({ onTypeClick }: Props) {
   if (loading) return <LoadingSpinner />;
   if (error) return <ErrorDisplay message={error} />;
 
-  const total = Object.values(counts).reduce((a, b) => a + b, 0).toLocaleString();
+  const dashboardKeys = new Set(DASHBOARD_STIX_TYPES.map(t => t.key));
+  const total = Object.entries(counts)
+    .filter(([k]) => dashboardKeys.has(k))
+    .reduce((a, [, v]) => a + v, 0)
+    .toLocaleString();
 
   return (
     <Box>
