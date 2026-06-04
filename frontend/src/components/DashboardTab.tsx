@@ -54,7 +54,7 @@ export default function DashboardTab({ onTypeClick }: Props) {
           triggering the card's click handler.
       ──────────────────────────────────────────────────────────────────── */}
       <Grid container spacing={2}>
-        {STIX_TYPES.map(t => (
+        {DASHBOARD_STIX_TYPES.map(t => (
           <Grid item xs={4} sm={3} md={2} key={t.key}>
             <Card
               onClick={() => onTypeClick(t.key)}
