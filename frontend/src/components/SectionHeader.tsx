@@ -17,7 +17,7 @@ interface Props {
 export default function SectionHeader({ title, tooltip, gutterBottom = true }: Props) {
   return (
     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: gutterBottom ? 3 : 2 }}>
-      <Typography variant="h6" sx={{ color: COLORS.textColor, fontWeight: 'bold' }}>
+      <Typography variant="h6" sx={{ color: COLORS.textSecondary, fontWeight: 'bold' }}>
         {title}
       </Typography>
       <HelpBadge tooltip={tooltip} />

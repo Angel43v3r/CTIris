@@ -52,8 +52,13 @@ export default function FeedsTab() {
             border: '1px solid rgba(255,255,255,0.07)',
             borderRadius: 2,
             height: '100%',
-            transition: 'border-color 0.2s',
-            '&:hover': { borderColor: COLORS.accentSecondary },
+            transition: 'transform 0.15s, box-shadow 0.15s',
+                '&:hover': {
+                  transform: 'translateY(-2px)',
+                  bgcolor: COLORS.cardBackground,
+                  boxShadow: `0 4px 20px ${COLORS.hoverBoxShadow}`,
+                  borderColor: COLORS.dataContainerBorderHover,
+                },
           }}>
             <CardContent>
               <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 1 }}>

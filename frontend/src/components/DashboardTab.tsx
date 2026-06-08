@@ -9,6 +9,9 @@ import HelpBadge from './HelpBadge';
 import SectionHeader from './SectionHeader';
 import MostActiveThreats from './MostActiveThreats';
 import MostActiveMalware from './MostActiveMalware';
+import Heatmap from './HeatMap';
+import DonutChart from './DonutChart';
+import CampaignList from './CampaignList';
 
 interface Props {
   /** Called when a stat card is clicked. Switches to the STIX browser filtered to that type. */
@@ -54,19 +57,21 @@ export default function DashboardTab({ onTypeClick }: Props) {
       ──────────────────────────────────────────────────────────────────── */}
       <Grid container spacing={2}>
         {DASHBOARD_STIX_TYPES.map(t => (
-          <Grid item xs={6} sm={4} md={3} key={t.key}>
+          <Grid item xs={4} sm={3} md={2} key={t.key}>
             <Card
               onClick={() => onTypeClick(t.key)}
               sx={{
-                background: 'linear-gradient(105deg, #402e68 0%, #7f5bce 100%)',
-                border: '1px solid rgba(255,255,255,0.07)',
+                background: COLORS.cardBackground,
+                backdropFilter: 'blur(10px)',
+                border: `1px solid ${COLORS.cardBorder}`,
                 borderRadius: 2,
                 position: 'relative',
                 cursor: 'pointer',
                 transition: 'transform 0.15s, box-shadow 0.15s',
                 '&:hover': {
                   transform: 'translateY(-2px)',
-                  boxShadow: '0 4px 20px rgba(127,91,206,0.4)',
+                  boxShadow: `0 4px 20px ${COLORS.hoverBoxShadow}`,
+                  borderColor: COLORS.dataContainerBorderHover,
                 },
               }}
             >
@@ -91,6 +96,41 @@ export default function DashboardTab({ onTypeClick }: Props) {
           </Grid>
         ))}
       </Grid>
+
+      <Box sx={{ display: 'flex', mt: 3 }}>
+        {/* ── HEATMAP ───────────────────────────────────────────────────────────*/}
+        <Box sx={{ flex: 4, p: 1 }}>
+          <SectionHeader
+            title="GLOBAL THREAT CONCENTRATION MAP"
+            tooltip="Shows the geographic distribution of STIX objects based on mention frequency. Higher concentrations appear in darker red. Select a country to view the number of reference."
+            gutterBottom={false}
+          />
+          <Heatmap />
+        </Box>
+
+        <Box sx = {{ flexDirection: 'row' }}>
+          {/* ── DONUT CHART ─────────────────────────────────────────────────────────── */}
+          <Box sx={{ flex: 1, p: 1 }}>
+            <SectionHeader
+              title="TARGETED INDUSTRY"
+              tooltip="Shows the distribution of industries based on keyword matches within STIX object content."
+              gutterBottom={false}
+            />
+            <DonutChart />
+          </Box>
+
+          {/* ── CAMPAIGN LIST ─────────────────────────────────────────────────────────── */}
+          <Box sx={{ p: 1, mt: 3 }}>
+            <SectionHeader
+              title="CAMPAIGN LIST"
+              tooltip="Shows a list of observed campaigns. Select a campaign to view detailed intelligence."
+              gutterBottom={false}
+            />
+            <CampaignList />
+          </Box>
+        </Box>
+
+      </Box>
 
       {/* ── WIDGETS ─────────────────────────────────────────────────────────── */}
       <Grid container spacing={3} sx={{ mt: 2 }}>

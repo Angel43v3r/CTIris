@@ -27,15 +27,15 @@ export default function DashboardBody() {
   }
 
   return (
-    <Box sx={{ bgcolor: COLORS.backgroundContainer, minHeight: '100vh', paddingX: 8, paddingY: 2 }}>
+    <Box sx={{ bgcolor: COLORS.backgroundContainer, minHeight: '100vh', paddingX: { xs: 2, md: 8 }, paddingY: 2, pb: 10 }}>
       <Tabs
         value={tab}
         onChange={(_, v: number) => setTab(v)}
         sx={{
           mb: 3,
           '& .MuiTab-root': { color: COLORS.textMuted, fontFamily: 'monospace', letterSpacing: 1.5, fontSize: '0.75rem' },
-          '& .Mui-selected': { color: COLORS.accentSecondary },
-          '& .MuiTabs-indicator': { backgroundColor: COLORS.accentSecondary },
+          '& .Mui-selected': { color: COLORS.textQuaternary },
+          '& .MuiTabs-indicator': { backgroundColor: COLORS.textQuaternary },
         }}
       >
         <Tab label="DASHBOARD" />

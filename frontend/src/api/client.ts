@@ -106,7 +106,7 @@ export const api = {
   },
 
   /** Fetch a single STIX object by its full ID (e.g. `malware--uuid`). */
-  stixById: (id: string) => get<StixObject>(`/stix/${encodeURIComponent(id)}`),
+  stixById: (id: string, signal?: AbortSignal) => get<StixObject>(`/stix/${encodeURIComponent(id)}`, signal),
 
   /** Fetch all configured TAXII feeds and their current status. */
   feeds: () => get<Feed[]>('/feeds'),
@@ -123,5 +123,9 @@ export const api = {
     const p = new URLSearchParams({ limit: String(limit) });
     if (feedId) p.set('feed_id', feedId);
     return get<IngestionLog[]>(`/ingestion-log?${p}`);
+  },
+
+  locations: (limit = 1000, signal?: AbortSignal) => {
+    return api.stix('location', limit, 0, signal);
   },
 };

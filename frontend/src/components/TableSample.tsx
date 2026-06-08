@@ -15,16 +15,16 @@ const rows = [
     attackSampleData('T1003', 'Credential Dumping', 'Steal credentials'),
 ];
 
-export default function AttackTechniques() {
+export default function TableSample() {
     return (
         <TableContainer sx={{ backgroundColor: COLORS.headerBackground, border: '2px solid rgba(255,255,255,0.05)', borderRadius: 2, overflow: 'hidden' }}>
             <Table sx={{ minWidth: 400, maxHeight: 400, overflow: 'auto', backgroundColor: 'transparent', 
                 '& .MuiTableCell-root': {borderBottom: '1px solid rgba(255,255,255,0.08)'}, }} size="small" aria-label="a dense table">
                 <TableHead>
                     <TableRow>
-                        <TableCell sx={{ color: COLORS.textOutline, fontWeight: 'bold', fontSize: '12px', letterSpacing: 1, textTransform: 'uppercase' }}>Technique ID</TableCell>
-                        <TableCell sx={{ color: COLORS.textOutline, fontWeight: 'bold', fontSize: '12px', letterSpacing: 1, textTransform: 'uppercase' }}>Name</TableCell>
-                        <TableCell sx={{ color: COLORS.textOutline, fontWeight: 'bold', fontSize: '12px', letterSpacing: 1, textTransform: 'uppercase' }}>Description</TableCell>
+                        <TableCell sx={{ color: COLORS.textSecondary, fontWeight: 'bold', fontSize: '12px', letterSpacing: 1, textTransform: 'uppercase' }}>Technique ID</TableCell>
+                        <TableCell sx={{ color: COLORS.textSecondary, fontWeight: 'bold', fontSize: '12px', letterSpacing: 1, textTransform: 'uppercase' }}>Name</TableCell>
+                        <TableCell sx={{ color: COLORS.textSecondary, fontWeight: 'bold', fontSize: '12px', letterSpacing: 1, textTransform: 'uppercase' }}>Description</TableCell>
                     </TableRow>
                 </TableHead>
                 <TableBody>
