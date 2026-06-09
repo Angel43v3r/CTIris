@@ -21,11 +21,21 @@ interface StixProperties {
 
 export default function PopUpModal({ stixId, onClose }: Props) {
     const [stix, setStix] = useState<StixObject | null>(null);
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
         if (!stixId) return;
+
+        // Suppressing the linter here. The linter is trying to stop us from
+        // creating an infinite loop by setting a state that is also in the
+        // dependency array, but the state being set in this useEffect is
+        // stixId, not one of the three being set below.
+
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+        setStix(null);
+        setLoading(true);
+        setError(null);
 
         const controller = new AbortController();
 
@@ -44,7 +54,7 @@ export default function PopUpModal({ stixId, onClose }: Props) {
 
     const props = (stix?.properties || {}) as StixProperties;
     const displayName = props.name || stix?.stix_id || 'Unnamed Threat Intel Profile';
-    const description = props.description || 'No deep analytical description found inside this payload document.';
+    const description = props.description || 'No description found.';
     const aliases = Array.isArray(props.aliases) ? props.aliases : [];
 
     return (
@@ -121,7 +131,7 @@ export default function PopUpModal({ stixId, onClose }: Props) {
                             <Typography
                                 variant="body2"
                                 sx={{
-                                    color: 'COLORS.textPrimary',
+                                    color: COLORS.textPrimary,
                                     lineHeight: 1.6,
                                     bgcolor: COLORS.modalBackground,
                                     p: 1.5,
@@ -140,10 +150,10 @@ export default function PopUpModal({ stixId, onClose }: Props) {
                                 <Typography variant="body2" sx={{ fontFamily: 'monospace', fontSize: '0.8rem' }}>
                                     {stix.type === 'campaign'
                                         ? (props.first_seen
-                                            ? new Date(props.first_seen).toLocaleDateString('sv-SE')
+                                            ? new Date(props.first_seen).toISOString().split('T')[0]
                                             : 'Unknown')
                                         : (stix.stix_created
-                                            ? new Date(stix.stix_created).toLocaleDateString('sv-SE')
+                                            ? new Date(stix.stix_created).toISOString().split('T')[0]
                                             : 'Unknown')}
                                 </Typography>
                             </Box>
@@ -152,10 +162,10 @@ export default function PopUpModal({ stixId, onClose }: Props) {
                                 <Typography variant="body2" sx={{ fontFamily: 'monospace', fontSize: '0.8rem' }}>
                                     {stix.type === 'campaign'
                                         ? (props.last_seen
-                                            ? new Date(props.last_seen).toLocaleDateString('sv-SE')
+                                            ? new Date(props.last_seen).toISOString().split('T')[0]
                                             : 'Unknown')
                                         : (stix.stix_modified
-                                            ? new Date(stix.stix_modified).toLocaleDateString('sv-SE')
+                                            ? new Date(stix.stix_modified).toISOString().split('T')[0]
                                             : 'Unknown')}
                                 </Typography>
                             </Box>
