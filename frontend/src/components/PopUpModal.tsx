@@ -21,7 +21,7 @@ interface StixProperties {
 
 export default function PopUpModal({ stixId, onClose }: Props) {
     const [stix, setStix] = useState<StixObject | null>(null);
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
