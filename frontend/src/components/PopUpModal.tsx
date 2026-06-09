@@ -125,7 +125,7 @@ export default function PopUpModal({ stixId, onClose }: Props) {
                             <Typography
                                 variant="body2"
                                 sx={{
-                                    color: 'COLORS.textPrimary',
+                                    color: COLORS.textPrimary,
                                     lineHeight: 1.6,
                                     bgcolor: COLORS.modalBackground,
                                     p: 1.5,
