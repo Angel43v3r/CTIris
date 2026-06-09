@@ -1,11 +1,10 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Accordion,
   AccordionDetails,
   AccordionSummary,
   Box,
-  Button,
   Chip,
   Divider,
   Link,
@@ -18,9 +17,9 @@ import {
   TableRow,
   Typography,
 } from '@mui/material';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import { ExpandMore } from '@mui/icons-material';
 import { api } from '../api/client';
-import type { StixObject, StixRelationships, StixRelationshipRef, StixRelationshipBackRef } from '../api/client';
+import type { StixObject, StixRelationships, StixRelationshipRef, StixRelationshipBackRef, StixPropertyRef } from '../api/client';
 import { COLORS } from '../constants/themeColors';
 import LoadingSpinner from './LoadingSpinner';
 import ErrorDisplay from './ErrorDisplay';
@@ -28,6 +27,7 @@ import StixDescription from './StixDescription';
 
 interface Props {
   stixId: string;
+  onDisplayNameChange?: (displayName: string) => void;
 }
 
 // Properties that are rendered explicitly above the accordion.
@@ -43,6 +43,8 @@ const KNOWN_KEYS = new Set([
   'object_marking_refs', 'granular_markings', 'extensions',
 ]);
 
+const STIX_ID_PATTERN = /^[a-z][a-z0-9-]*--[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+
 function formatDate(d: string | null | undefined): string {
   if (!d) return '—';
   const parsed = new Date(d);
@@ -53,6 +55,96 @@ function formatDateShort(d: string | null | undefined): string {
   if (!d) return '—';
   const parsed = new Date(d);
   return isNaN(parsed.getTime()) ? d : parsed.toLocaleDateString();
+}
+
+function getDisplayName(stix: StixObject, fallback: string): string {
+  const props = (stix.properties ?? {}) as Record<string, unknown>;
+  return (props.name as string | undefined) ?? fallback;
+}
+
+function isStixId(value: string): boolean {
+  return STIX_ID_PATTERN.test(value);
+}
+
+function AdditionalPropertyValue({
+  value,
+  navigate,
+  propertyRefLookup,
+  depth = 0,
+}: {
+  value: unknown;
+  navigate: (path: string) => void;
+  propertyRefLookup: Record<string, StixPropertyRef>;
+  depth?: number;
+}) {
+  if (value === null || value === undefined) {
+    return <Typography component="span" sx={{ color: COLORS.textMuted }}>—</Typography>;
+  }
+
+  if (typeof value === 'string') {
+    if (isStixId(value)) {
+      const propertyRef = propertyRefLookup[value];
+      const displayValue = propertyRef?.name ?? value;
+
+      return (
+        <Link
+          component="button"
+          type="button"
+          title={propertyRef ? value : undefined}
+          onClick={() => navigate('/stix/' + encodeURIComponent(value))}
+          sx={{ color: COLORS.textTertiary, fontFamily: 'monospace', fontSize: '0.78rem', wordBreak: 'break-all', textAlign: 'left' }}
+        >
+          {displayValue}
+        </Link>
+      );
+    }
+
+    return <Typography component="span" sx={{ color: COLORS.textPrimary, fontFamily: 'monospace', fontSize: '0.78rem', wordBreak: 'break-word', whiteSpace: 'pre-wrap' }}>{value}</Typography>;
+  }
+
+  if (typeof value === 'number' || typeof value === 'boolean') {
+    return <Typography component="span" sx={{ color: COLORS.textPrimary, fontFamily: 'monospace', fontSize: '0.78rem' }}>{String(value)}</Typography>;
+  }
+
+  if (Array.isArray(value)) {
+    if (value.length === 0) {
+      return <Typography component="span" sx={{ color: COLORS.textMuted }}>None</Typography>;
+    }
+
+    return (
+      <Box component="ul" sx={{ display: 'flex', flexDirection: 'column', gap: 0.5, m: 0, pl: 2.25 }}>
+        {value.map((item, itemIndex) => (
+          <Box component="li" key={itemIndex} sx={{ color: COLORS.textMuted, pl: 0.25 }}>
+            <AdditionalPropertyValue value={item} navigate={navigate} propertyRefLookup={propertyRefLookup} depth={depth + 1} />
+          </Box>
+        ))}
+      </Box>
+    );
+  }
+
+  if (typeof value === 'object') {
+    const entries = Object.entries(value as Record<string, unknown>);
+    if (entries.length === 0) {
+      return <Typography component="span" sx={{ color: COLORS.textMuted }}>None</Typography>;
+    }
+
+    return (
+      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.75, pl: depth > 0 ? 1.5 : 0 }}>
+        {entries.map(([keyName, entryValue]) => (
+          <Box key={keyName} sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: 'minmax(120px, max-content) minmax(0, 1fr)' }, columnGap: 1.25, rowGap: 0.25 }}>
+            <Typography component="span" sx={{ color: COLORS.textMuted, fontFamily: 'monospace', fontSize: '0.72rem', textTransform: 'uppercase', wordBreak: 'break-word' }}>
+              {keyName}
+            </Typography>
+            <Box sx={{ minWidth: 0 }}>
+              <AdditionalPropertyValue value={entryValue} navigate={navigate} propertyRefLookup={propertyRefLookup} depth={depth + 1} />
+            </Box>
+          </Box>
+        ))}
+      </Box>
+    );
+  }
+
+  return <Typography component="span" sx={{ color: COLORS.textPrimary, fontFamily: 'monospace', fontSize: '0.78rem' }}>{String(value)}</Typography>;
 }
 
 // ── Shared style helpers ──────────────────────────────────────────────────────
@@ -229,7 +321,7 @@ function RelationshipTable({
 
 // ── Main component ────────────────────────────────────────────────────────────
 
-export default function StixObjectDetail({ stixId }: Props) {
+export default function StixObjectDetail({ stixId, onDisplayNameChange }: Props) {
   const navigate = useNavigate();
 
   const [stix, setStix] = useState<StixObject | null>(null);
@@ -249,7 +341,10 @@ export default function StixObjectDetail({ stixId }: Props) {
     setRels(null);
 
     api.stixById(stixId, controller.signal)
-      .then(setStix)
+      .then((nextStix) => {
+        setStix(nextStix);
+        onDisplayNameChange?.(getDisplayName(nextStix, stixId));
+      })
       .catch(e => { if (e.name !== 'AbortError') setObjectError(String(e)); })
       .finally(() => setObjectLoading(false));
 
@@ -259,12 +354,11 @@ export default function StixObjectDetail({ stixId }: Props) {
       .finally(() => setRelsLoading(false));
 
     return () => controller.abort();
-  }, [stixId]);
+  }, [onDisplayNameChange, stixId]);
 
   // ── Derive display values ─────────────────────────────────────────────────
 
   const props = (stix?.properties ?? {}) as Record<string, unknown>;
-  const displayName = (props.name as string | undefined) ?? stixId;
   const description = props.description as string | undefined;
   const aliases = Array.isArray(props.aliases) ? (props.aliases as string[]) : [];
   const labels = Array.isArray(props.labels) ? (props.labels as string[]) : [];
@@ -280,6 +374,13 @@ export default function StixObjectDetail({ stixId }: Props) {
     : [];
   const pattern = props.pattern as string | undefined;
   const patternType = props.pattern_type as string | undefined;
+  const propertyRefLookup = useMemo(
+    () => (rels?.property_refs ?? []).reduce<Record<string, StixPropertyRef>>((lookup, propertyRef) => {
+      lookup[propertyRef.ref] = propertyRef;
+      return lookup;
+    }, {}),
+    [rels?.property_refs]
+  );
 
   // Collect unknown extra keys for the accordion
   const extraEntries = Object.entries(props).filter(([k]) => !KNOWN_KEYS.has(k));
@@ -288,36 +389,12 @@ export default function StixObjectDetail({ stixId }: Props) {
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-
-      {/* Back button */}
-      <Box>
-        <Button
-          onClick={() => navigate('/stix')}
-          sx={{
-            color: COLORS.textMuted,
-            fontFamily: 'monospace',
-            fontSize: '0.75rem',
-            letterSpacing: 1,
-            textTransform: 'uppercase',
-            pl: 0,
-            '&:hover': { color: COLORS.textPrimary, bgcolor: 'transparent' },
-          }}
-          disableRipple
-        >
-          ← Back to STIX Objects
-        </Button>
-      </Box>
-
       {objectLoading && <LoadingSpinner />}
       {objectError && <ErrorDisplay message={objectError} />}
 
       {!objectLoading && !objectError && stix && (
         <>
-          {/* Header */}
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, flexWrap: 'wrap' }}>
-            <Typography variant="h5" sx={{ fontWeight: 'bold', color: COLORS.textPrimary, flex: 1, minWidth: 0, wordBreak: 'break-word' }}>
-              {displayName}
-            </Typography>
             <Chip
               label={stix.type}
               size="small"
@@ -444,7 +521,7 @@ export default function StixObjectDetail({ stixId }: Props) {
               }}
             >
               <AccordionSummary
-                expandIcon={<ExpandMoreIcon sx={{ color: COLORS.textMuted }} />}
+                expandIcon={<ExpandMore sx={{ color: COLORS.textMuted }} />}
                 sx={{ minHeight: 40, '& .MuiAccordionSummary-content': { my: 0 } }}
               >
                 <Typography sx={{ color: COLORS.textMuted, fontFamily: 'monospace', fontSize: '0.75rem', letterSpacing: 1, textTransform: 'uppercase' }}>
@@ -458,9 +535,7 @@ export default function StixObjectDetail({ stixId }: Props) {
                       <Typography sx={{ color: COLORS.textMuted, fontFamily: 'monospace', fontSize: '0.68rem', letterSpacing: 1, textTransform: 'uppercase', mb: 0.25 }}>
                         {key}
                       </Typography>
-                      <Typography sx={{ color: COLORS.textPrimary, fontFamily: 'monospace', fontSize: '0.78rem', wordBreak: 'break-all', whiteSpace: 'pre-wrap' }}>
-                        {typeof val === 'object' ? JSON.stringify(val, null, 2) : String(val)}
-                      </Typography>
+                      <AdditionalPropertyValue value={val} navigate={navigate} propertyRefLookup={propertyRefLookup} />
                     </Box>
                   ))}
                 </Box>

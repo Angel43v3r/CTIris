@@ -163,11 +163,14 @@ def top_by_relationships(
 def get_stix_relationships(stix_id: str, conn=Depends(get_db)):
     """Return all STIX relationship objects involving the given STIX ID.
 
-    Returns two lists:
+        Returns two relationship lists and one property-reference lookup:
     - references: relationship objects where stix_id is source_ref (what this object points to).
       Each entry includes the resolved name and type of the target object.
     - referenced_by: relationship objects where stix_id is target_ref (what points to this object).
       Each entry includes the resolved name and type of the source object.
+        - property_refs: direct object references found in this object's JSON properties,
+            such as created_by_ref and x_mitre_modified_by_ref. These are not relationship
+            objects, but they let the UI resolve display names for referenced STIX IDs.
 
     Returns empty lists if no relationships exist — never 404.
 
@@ -175,7 +178,7 @@ def get_stix_relationships(stix_id: str, conn=Depends(get_db)):
         stix_id: The STIX object ID (e.g. "malware--uuid").
 
     Returns:
-        { references: [...], referenced_by: [...] }
+        { references: [...], referenced_by: [...], property_refs: [...] }
 
     Example:
         GET /stix/malware--4e57a4d2-.../relationships
@@ -204,11 +207,47 @@ def get_stix_relationships(stix_id: str, conn=Depends(get_db)):
           AND rel.properties->>'target_ref' = :stix_id
         ORDER BY relationship_type, source_name
     """)
+    property_refs_stmt = sa.text("""
+        WITH current_object AS (
+            SELECT properties
+            FROM stix_objects
+            WHERE stix_id = :stix_id
+        ), property_refs AS (
+            SELECT entry.key AS property_name, entry.value #>> '{}' AS ref
+            FROM current_object
+            CROSS JOIN LATERAL jsonb_each(properties) AS entry(key, value)
+            WHERE entry.key LIKE '%\\_ref' ESCAPE '\\'
+              AND jsonb_typeof(entry.value) = 'string'
+
+            UNION
+
+            SELECT entry.key AS property_name, array_ref.ref
+            FROM current_object
+            CROSS JOIN LATERAL jsonb_each(properties) AS entry(key, value)
+            CROSS JOIN LATERAL jsonb_array_elements_text(
+                CASE
+                    WHEN jsonb_typeof(entry.value) = 'array' THEN entry.value
+                    ELSE '[]'::jsonb
+                END
+            ) AS array_ref(ref)
+            WHERE entry.key LIKE '%\\_refs' ESCAPE '\\'
+        )
+        SELECT
+            property_refs.property_name,
+            property_refs.ref,
+            referenced.properties->>'name' AS name,
+            referenced.type                AS type
+        FROM property_refs
+        JOIN stix_objects referenced ON referenced.stix_id = property_refs.ref
+        ORDER BY property_refs.property_name, name, property_refs.ref
+    """)
     references = conn.execute(references_stmt, {"stix_id": stix_id}).mappings().fetchall()
     referenced_by = conn.execute(referenced_by_stmt, {"stix_id": stix_id}).mappings().fetchall()
+    property_refs = conn.execute(property_refs_stmt, {"stix_id": stix_id}).mappings().fetchall()
     return {
         "references": [dict(row) for row in references],
         "referenced_by": [dict(row) for row in referenced_by],
+        "property_refs": [dict(row) for row in property_refs],
     }
 
 

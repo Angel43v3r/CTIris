@@ -25,10 +25,10 @@ interface RawStixData {
 }
 
 /**
- * Functional component to display a  list of alphabetically sorted STIX campaign objects in a scrollable container. 
+ * Functional component to display a  list of alphabetically sorted STIX campaign objects in a scrollable container.
  * When a campaign object is clicked, a pop up modal appears with campaign information using the PopUpModal component.
- * @returns a sorted STIX 
- * 
+ * @returns a sorted STIX
+ *
  * campaign objects
  */
 export default function CampaignList() {
@@ -44,9 +44,9 @@ export default function CampaignList() {
       try {
         setLoading(true);
         const rows = await api.stix('campaign', 500, 0, controller.signal);
-        
+
         const rawRows = (rows as RawStixData[]) || [];
-        
+
         const formatted: CampaignData[] = rawRows.map((r) => {
           const props = r.properties || {};
           return {

@@ -71,12 +71,26 @@ export interface StixRelationshipBackRef {
   source_type: string;
 }
 
-/** Relationship data for a single STIX object — two directional lists. */
+/** One direct STIX ID reference found in an object's JSON properties. */
+export interface StixPropertyRef {
+  /** Property containing the reference, e.g. `created_by_ref`. */
+  property_name: string;
+  /** Referenced STIX ID. */
+  ref: string;
+  /** Display name of the referenced object, or null if unavailable. */
+  name: string | null;
+  /** STIX type of the referenced object. */
+  type: string;
+}
+
+/** Relationship data for a single STIX object — two directional lists plus direct property refs. */
 export interface StixRelationships {
   /** Objects that this object references as source_ref. */
   references: StixRelationshipRef[];
   /** Objects that reference this object as target_ref. */
   referenced_by: StixRelationshipBackRef[];
+  /** Direct references found in object properties, used for name resolution. */
+  property_refs: StixPropertyRef[];
 }
 
 /** One ingestion run record — written after every poll attempt, success or failure. */
