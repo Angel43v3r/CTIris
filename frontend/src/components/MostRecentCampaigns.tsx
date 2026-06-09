@@ -41,7 +41,7 @@ export default function MostRecentCampaigns() {
     const fetchCampaigns = async () => {
       try {
         setLoading(true);
-        const rows = await api.stix('campaign', 500, 0, controller.signal);
+        const rows = await api.stix('campaign', 1000, 0, controller.signal);
 
         const rawRows = (rows as RawStixData[]) || [];
 
