@@ -27,8 +27,16 @@ export default function PopUpModal({ stixId, onClose }: Props) {
     useEffect(() => {
         if (!stixId) return;
 
+        // Suppressing the linter here. The linter is trying to stop us from
+        // creating an infinite loop by setting a state that is also in the
+        // dependency array, but the state being set in this useEffect is
+        // stixId, not one of the three being set below.
+
+        // eslint-disable-next-line react-hooks/no-direct-set-state-in-use-effect
         setStix(null);
+        // eslint-disable-next-line react-hooks/no-direct-set-state-in-use-effect
         setLoading(true);
+        // eslint-disable-next-line react-hooks/no-direct-set-state-in-use-effect
         setError(null);
 
         const controller = new AbortController();
