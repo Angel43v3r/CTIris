@@ -189,7 +189,7 @@ class TestGetStixRelationships:
             "ref": "identity--aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee",
             "name": "MITRE ATT&CK",
             "type": "identity",
-                "present": True,
+            "present": True,
         }
         app.dependency_overrides[get_db] = _override(_mock_conn_multi([], [], [property_ref_row]))
         response = client.get(f"/stix/{STIX_ID}/relationships")
@@ -199,31 +199,31 @@ class TestGetStixRelationships:
         assert data["referenced_by"] == []
         assert data["property_refs"] == [property_ref_row]
 
-        def test_returns_unresolved_refs(self):
-            unresolved_ref_row = {
-                "relationship_type": "uses",
-                "target_ref": "tool--ffffffff-1111-2222-3333-444444444444",
-                "target_name": None,
-                "target_type": None,
-                "target_present": False,
-            }
-            unresolved_property_ref_row = {
-                "property_name": "created_by_ref",
-                "ref": "identity--ffffffff-1111-2222-3333-444444444444",
-                "name": None,
-                "type": None,
-                "present": False,
-            }
-            app.dependency_overrides[get_db] = _override(
-                _mock_conn_multi([unresolved_ref_row], [], [unresolved_property_ref_row])
-            )
+    def test_returns_unresolved_refs(self):
+        unresolved_ref_row = {
+            "relationship_type": "uses",
+            "target_ref": "tool--ffffffff-1111-2222-3333-444444444444",
+            "target_name": None,
+            "target_type": None,
+            "target_present": False,
+        }
+        unresolved_property_ref_row = {
+            "property_name": "created_by_ref",
+            "ref": "identity--ffffffff-1111-2222-3333-444444444444",
+            "name": None,
+            "type": None,
+            "present": False,
+        }
+        app.dependency_overrides[get_db] = _override(
+            _mock_conn_multi([unresolved_ref_row], [], [unresolved_property_ref_row])
+        )
 
-            response = client.get(f"/stix/{STIX_ID}/relationships")
-            assert response.status_code == 200
-            data = response.json()
-            assert data["references"] == [unresolved_ref_row]
-            assert data["referenced_by"] == []
-            assert data["property_refs"] == [unresolved_property_ref_row]
+        response = client.get(f"/stix/{STIX_ID}/relationships")
+        assert response.status_code == 200
+        data = response.json()
+        assert data["references"] == [unresolved_ref_row]
+        assert data["referenced_by"] == []
+        assert data["property_refs"] == [unresolved_property_ref_row]
 
     def test_returns_empty_when_no_relationships(self):
         app.dependency_overrides[get_db] = _override(_mock_conn_multi([], [], []))
