@@ -34,8 +34,8 @@ interface StixProperties {
 }
 
 /**
- * Functional component that shows a Donut Chart of targeted industries based on keyword matches in intrusion set STIX objects.
- * @returns a donut chart showing industry distributions
+ * Functional component that shows a Radar Chart of targeted industries based on keyword matches in intrusion set STIX objects.
+ * @returns a radar chart showing industry distributions
  */
 export default function TargetedIndustries() {
     const [data, setData] = useState<ChartDataType[]>([]);
