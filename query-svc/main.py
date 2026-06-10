@@ -172,6 +172,9 @@ def get_stix_relationships(stix_id: str, conn=Depends(get_db)):
             such as created_by_ref and x_mitre_modified_by_ref. These are not relationship
             objects, but they let the UI resolve display names for referenced STIX IDs.
 
+        Unknown refs are still returned. When the referenced object is not in the local
+        database, name/type are null and the corresponding *_present flag is false.
+
     Returns empty lists if no relationships exist — never 404.
 
     Args:
@@ -188,24 +191,26 @@ def get_stix_relationships(stix_id: str, conn=Depends(get_db)):
             rel.properties->>'relationship_type' AS relationship_type,
             rel.properties->>'target_ref'        AS target_ref,
             target.properties->>'name'           AS target_name,
-            target.type                          AS target_type
+            target.type                          AS target_type,
+            (target.stix_id IS NOT NULL)         AS target_present
         FROM stix_objects rel
-        JOIN stix_objects target ON target.stix_id = rel.properties->>'target_ref'
+        LEFT JOIN stix_objects target ON target.stix_id = rel.properties->>'target_ref'
         WHERE rel.type = 'relationship'
           AND rel.properties->>'source_ref' = :stix_id
-        ORDER BY relationship_type, target_name
+        ORDER BY relationship_type, target_name NULLS LAST, target_ref
     """)
     referenced_by_stmt = sa.text("""
         SELECT
             rel.properties->>'relationship_type' AS relationship_type,
             rel.properties->>'source_ref'        AS source_ref,
             source.properties->>'name'           AS source_name,
-            source.type                          AS source_type
+            source.type                          AS source_type,
+            (source.stix_id IS NOT NULL)         AS source_present
         FROM stix_objects rel
-        JOIN stix_objects source ON source.stix_id = rel.properties->>'source_ref'
+        LEFT JOIN stix_objects source ON source.stix_id = rel.properties->>'source_ref'
         WHERE rel.type = 'relationship'
           AND rel.properties->>'target_ref' = :stix_id
-        ORDER BY relationship_type, source_name
+        ORDER BY relationship_type, source_name NULLS LAST, source_ref
     """)
     property_refs_stmt = sa.text("""
         WITH current_object AS (
@@ -236,10 +241,11 @@ def get_stix_relationships(stix_id: str, conn=Depends(get_db)):
             property_refs.property_name,
             property_refs.ref,
             referenced.properties->>'name' AS name,
-            referenced.type                AS type
+            referenced.type                AS type,
+            (referenced.stix_id IS NOT NULL) AS present
         FROM property_refs
-        JOIN stix_objects referenced ON referenced.stix_id = property_refs.ref
-        ORDER BY property_refs.property_name, name, property_refs.ref
+        LEFT JOIN stix_objects referenced ON referenced.stix_id = property_refs.ref
+        ORDER BY property_refs.property_name, name NULLS LAST, property_refs.ref
     """)
     references = conn.execute(references_stmt, {"stix_id": stix_id}).mappings().fetchall()
     referenced_by = conn.execute(referenced_by_stmt, {"stix_id": stix_id}).mappings().fetchall()

@@ -38,8 +38,8 @@ function formatDate(d: string | null | undefined) {
  * Search (client-side): filters the already-fetched array by name or stix_id
  * without an extra API call.
  *
- * Detail modal: clicking a row navigates to /stix/{id}, opening PopUpModal.
- * The modal self-fetches the full object via api.stixById.
+ * Detail view: clicking a row navigates to /stix/{id}, which renders the
+ * routed STIX detail page.
  */
 export default function StixBrowser() {
   const navigate = useNavigate();
@@ -51,16 +51,14 @@ export default function StixBrowser() {
   const [objects, setObjects] = useState<StixObject[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [fetchedFor, setFetchedFor] = useState<string | null>(null);
-  const [typeFilter, setTypeFilter] = useState(urlType ?? '');
+  const [typeFilter, setTypeFilter] = useState(urlType);
   const [search, setSearch] = useState('');
 
   // Sync local typeFilter when the URL type param changes (stat card click,
-  // back/forward). Fires during render to avoid a one-frame stale display.
-  const [prevUrlType, setPrevUrlType] = useState(urlType);
-  if (prevUrlType !== urlType) {
-    setPrevUrlType(urlType);
+  // back/forward).
+  useEffect(() => {
     setTypeFilter(urlType);
-  }
+  }, [urlType]);
 
   // loading is true whenever typeFilter has changed but the fetch hasn't settled yet
   const loading = fetchedFor !== typeFilter;

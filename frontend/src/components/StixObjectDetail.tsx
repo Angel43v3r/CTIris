@@ -36,7 +36,7 @@ interface RequestError {
   message: string;
 }
 
-// Properties that are rendered explicitly above the accordion.
+// Properties rendered explicitly above the additional-properties table.
 // Everything else in `properties` falls into "Additional Properties".
 const KNOWN_KEYS = new Set([
   'name', 'description', 'aliases', 'labels',
@@ -93,6 +93,20 @@ function AdditionalPropertyValue({
     if (isStixId(value)) {
       const propertyRef = propertyRefLookup[value];
       const displayValue = propertyRef?.name ?? value;
+      const isNavigable = propertyRef ? (propertyRef.present ?? true) : false;
+
+      if (!isNavigable) {
+        return (
+          <>
+            <Typography component="span" sx={{ color: COLORS.textMuted, fontFamily: 'monospace', fontSize: '0.78rem', wordBreak: 'break-word' }}>
+              {displayValue}
+            </Typography>
+            <Typography component="span" sx={{ color: COLORS.textMuted, fontFamily: 'monospace', fontSize: '0.68rem', ml: 0.75 }}>
+              (not in db)
+            </Typography>
+          </>
+        );
+      }
 
       return (
         <Link
@@ -336,20 +350,31 @@ function RelationshipTable({
                 const ref = isRef(r) ? r.target_ref : r.source_ref;
                 const name = isRef(r) ? r.target_name : r.source_name;
                 const type = isRef(r) ? r.target_type : r.source_type;
+                const isNavigable = isRef(r)
+                  ? (r.target_present ?? true)
+                  : (r.source_present ?? true);
                 return (
                   <TableRow
                     key={i}
-                    onClick={() => navigate('/stix/' + encodeURIComponent(ref))}
-                    sx={{ cursor: 'pointer', '&:hover': { bgcolor: COLORS.cardBackground } }}
+                    onClick={isNavigable ? () => navigate('/stix/' + encodeURIComponent(ref)) : undefined}
+                    sx={{
+                      cursor: isNavigable ? 'pointer' : 'default',
+                      '&:hover': isNavigable ? { bgcolor: COLORS.cardBackground } : undefined,
+                    }}
                   >
                     <TableCell sx={{ ...tableBodyCell, color: COLORS.textQuaternary, fontFamily: 'monospace', fontSize: '0.75rem' }}>
                       {r.relationship_type}
                     </TableCell>
                     <TableCell sx={{ ...tableBodyCell, color: COLORS.textMuted, fontFamily: 'monospace', fontSize: '0.72rem' }}>
-                      {type}
+                      {type ?? '—'}
                     </TableCell>
                     <TableCell sx={{ ...tableBodyCell, color: COLORS.textPrimary }}>
                       {name ?? <Typography component="span" sx={{ color: COLORS.textMuted, fontFamily: 'monospace', fontSize: '0.75rem' }}>{ref}</Typography>}
+                      {!isNavigable && (
+                        <Typography component="span" sx={{ color: COLORS.textMuted, fontFamily: 'monospace', fontSize: '0.68rem', ml: 0.75 }}>
+                          (not in db)
+                        </Typography>
+                      )}
                     </TableCell>
                   </TableRow>
                 );
@@ -426,7 +451,7 @@ export default function StixObjectDetail({ stixId, onDisplayNameChange }: Props)
     [rels?.property_refs]
   );
 
-  // Collect unknown extra keys for the accordion
+  // Collect unknown extra keys for the additional-properties table
   const extraEntries = Object.entries(props).filter(([k]) => !KNOWN_KEYS.has(k));
 
   // ── Render ────────────────────────────────────────────────────────────────

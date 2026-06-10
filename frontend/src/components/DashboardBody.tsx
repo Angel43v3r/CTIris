@@ -11,13 +11,8 @@ import StixObjectDetail from './StixObjectDetail';
 /**
  * Main content area — three-tab layout: Dashboard, Feeds, STIX Objects.
  *
- * Tab panels are always mounted and hidden with CSS (display: none) rather
- * than conditionally rendered. This means data loaded in one tab is still
- * in memory when you switch away and back, avoiding redundant API calls.
- *
- * selectedType wires the Dashboard stat cards to the STIX browser — clicking
- * a card calls navigateToType(type), which switches to the STIX Objects tab
- * and passes the type as the initial filter.
+ * When the route is /stix/:id, this component switches into detail mode and
+ * renders the STIX object detail page in place of the tab panels.
  */
 export default function DashboardBody() {
   const location = useLocation();

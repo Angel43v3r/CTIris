@@ -55,8 +55,10 @@ export interface StixRelationshipRef {
   target_ref: string;
   /** Display name of the target object, or null if unavailable. */
   target_name: string | null;
-  /** STIX type of the target object. */
-  target_type: string;
+  /** STIX type of the target object, null when unresolved. */
+  target_type: string | null;
+  /** Whether the target object exists in the local database. */
+  target_present: boolean;
 }
 
 /** One entry in the "referenced_by" list — an object that points to this STIX object via a relationship. */
@@ -67,8 +69,10 @@ export interface StixRelationshipBackRef {
   source_ref: string;
   /** Display name of the source object, or null if unavailable. */
   source_name: string | null;
-  /** STIX type of the source object. */
-  source_type: string;
+  /** STIX type of the source object, null when unresolved. */
+  source_type: string | null;
+  /** Whether the source object exists in the local database. */
+  source_present: boolean;
 }
 
 /** One direct STIX ID reference found in an object's JSON properties. */
@@ -79,8 +83,10 @@ export interface StixPropertyRef {
   ref: string;
   /** Display name of the referenced object, or null if unavailable. */
   name: string | null;
-  /** STIX type of the referenced object. */
-  type: string;
+  /** STIX type of the referenced object, null when unresolved. */
+  type: string | null;
+  /** Whether the referenced object exists in the local database. */
+  present: boolean;
 }
 
 /** Relationship data for a single STIX object — two directional lists plus direct property refs. */

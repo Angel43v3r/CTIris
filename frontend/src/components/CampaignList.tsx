@@ -25,11 +25,10 @@ interface RawStixData {
 }
 
 /**
- * Functional component to display a  list of alphabetically sorted STIX campaign objects in a scrollable container.
- * When a campaign object is clicked, a pop up modal appears with campaign information using the PopUpModal component.
- * @returns a sorted STIX
+ * Displays an alphabetically sorted list of STIX campaign objects in a
+ * scrollable container.
  *
- * campaign objects
+ * Clicking a campaign navigates to that object's routed detail page.
  */
 export default function CampaignList() {
   const navigate = useNavigate();
