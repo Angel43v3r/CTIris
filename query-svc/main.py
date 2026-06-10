@@ -1,5 +1,6 @@
 import os
 import uuid
+from datetime import datetime
 
 import sqlalchemy as sa
 from fastapi import Depends, FastAPI, HTTPException, Query, Response
@@ -34,9 +35,17 @@ def get_db():
         yield conn
 
 
-# Converts UUID to String so JSON can handle them (JSON has no UUID type)
+# Converts UUID and datetime to String so JSON can handle them (JSON has no UUID or datetime type)
 def _serialize(row: dict) -> dict:
-    return {k: str(v) if isinstance(v, uuid.UUID) else v for k, v in row.items()}
+    result = {}
+    for k, v in row.items():
+        if isinstance(v, uuid.UUID):
+            result[k] = str(v)
+        elif isinstance(v, datetime):
+            result[k] = v.isoformat()
+        else:
+            result[k] = v
+    return result
 
 
 @app.get("/health")
@@ -83,11 +92,11 @@ def list_stix(
     """
     # Build WHERE conditions for filtering
     conditions = []
-    
+
     # Filter by type if specified
     if type:
         conditions.append(stix_objects_table.c.type == type)
-    
+
     # Filter by search term if specified (case-insensitive search on stix_id or name)
     if search and search.strip():
         search_pattern = f"%{search.strip()}%"
@@ -97,13 +106,13 @@ def list_stix(
                 stix_objects_table.c.properties["name"].astext.ilike(search_pattern),
             )
         )
-    
+
     # Get total count with same filters
     count_stmt = sa.select(sa.func.count()).select_from(stix_objects_table)
     if conditions:
         count_stmt = count_stmt.where(sa.and_(*conditions))
     total_count = conn.execute(count_stmt).scalar()
-    
+
     # Builds the SQL query using SQLAlchemy
     stmt = (
         sa.select(stix_objects_table)
@@ -114,14 +123,14 @@ def list_stix(
     # Apply the same filters to the main query
     if conditions:
         stmt = stmt.where(sa.and_(*conditions))
-    
+
     # Executes the statement and returns all matching rows as a list.
     # .mappings() returns each row as a dictionary-like object instead of a tuple
     rows = conn.execute(stmt).mappings().fetchall()
     # dict(row) converts the SQL alchemy mapping into a plain Python dictionary
     # _serialize is a method defined above: converts uuid to strings for the JSON
     data = [_serialize(dict(row)) for row in rows]
-    
+
     # Return response with X-Total-Count header
     return JSONResponse(
         content=data,

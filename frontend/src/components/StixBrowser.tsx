@@ -77,7 +77,7 @@ export default function StixBrowser() {
     const controller = new AbortController();
     const offset = (currentPage - 1) * PAGE_SIZE;
     const key = `${typeFilter}|${searchQuery}|${currentPage}`;
-    
+
     api.stix(
       typeFilter || undefined,
       searchQuery || undefined,
