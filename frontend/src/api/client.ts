@@ -135,13 +135,28 @@ export const api = {
   /**
    * Fetch a page of STIX objects.
    * @param type - Optional STIX type filter (e.g. `'malware'`). Omit for all types.
+   * @param limit - Max objects to return. API hard cap is 1000.
+   * @param offset - Number of objects to skip, for pagination.
+   * @param signal - Optional AbortSignal to cancel the request.
+   * @returns Array of STIX objects.
+   */
+  stix: (type?: string, limit = 1000, offset = 0, signal?: AbortSignal) => {
+    const p = new URLSearchParams({ limit: String(limit), offset: String(offset) });
+    if (type) p.set('type', type);
+    return get<StixObject[]>(`/stix?${p}`, signal);
+  },
+
+  /**
+   * Fetch a page of STIX objects with pagination metadata.
+   * Supports server-side search and returns total count via X-Total-Count header.
+   * @param type - Optional STIX type filter (e.g. `'malware'`). Omit for all types.
    * @param search - Optional search term to filter by STIX ID or name.
    * @param limit - Max objects to return. API hard cap is 1000.
    * @param offset - Number of objects to skip, for pagination.
    * @param signal - Optional AbortSignal to cancel the request.
    * @returns Object with `data` (array of STIX objects) and `totalCount` (from X-Total-Count header).
    */
-  stix: async (type?: string, search?: string, limit = 1000, offset = 0, signal?: AbortSignal): Promise<PaginatedResponse<StixObject[]>> => {
+  stixWithCount: async (type?: string, search?: string, limit = 1000, offset = 0, signal?: AbortSignal): Promise<PaginatedResponse<StixObject[]>> => {
     const p = new URLSearchParams({ limit: String(limit), offset: String(offset) });
     if (type) p.set('type', type);
     if (search) p.set('search', search);

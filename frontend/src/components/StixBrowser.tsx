@@ -1,4 +1,4 @@
-import { FormEvent, useEffect, useState } from 'react';
+import { type FormEvent, useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import {
   Box, Button, FormControl,
@@ -58,12 +58,14 @@ export default function StixBrowser() {
   const [totalCount, setTotalCount] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const [fetchedFor, setFetchedFor] = useState<string>('');
-  const [searchInput, setSearchInput] = useState('');
+  const [searchInput, setSearchInput] = useState(searchQuery);
+  const [prevSearchQuery, setPrevSearchQuery] = useState(searchQuery);
 
-  // Sync search input with URL when URL changes
-  useEffect(() => {
+  // Sync search input when URL searchQuery changes (React's getDerivedStateFromProps pattern)
+  if (searchQuery !== prevSearchQuery) {
     setSearchInput(searchQuery);
-  }, [searchQuery]);
+    setPrevSearchQuery(searchQuery);
+  }
 
   // loading is true whenever URL params have changed but the fetch hasn't settled yet
   const currentKey = `${typeFilter}|${searchQuery}|${currentPage}`;
@@ -78,7 +80,7 @@ export default function StixBrowser() {
     const offset = (currentPage - 1) * PAGE_SIZE;
     const key = `${typeFilter}|${searchQuery}|${currentPage}`;
 
-    api.stix(
+    api.stixWithCount(
       typeFilter || undefined,
       searchQuery || undefined,
       PAGE_SIZE,
