@@ -45,20 +45,13 @@ export default function StixBrowser() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
 
-  // Derive typeFilter from URL search params.
-  const urlType = searchParams.get('type') ?? '';
+  // Derive typeFilter directly from URL search params.
+  const typeFilter = searchParams.get('type') ?? '';
 
   const [objects, setObjects] = useState<StixObject[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [fetchedFor, setFetchedFor] = useState<string | null>(null);
-  const [typeFilter, setTypeFilter] = useState(urlType);
   const [search, setSearch] = useState('');
-
-  // Sync local typeFilter when the URL type param changes (stat card click,
-  // back/forward).
-  useEffect(() => {
-    setTypeFilter(urlType);
-  }, [urlType]);
 
   // loading is true whenever typeFilter has changed but the fetch hasn't settled yet
   const loading = fetchedFor !== typeFilter;
