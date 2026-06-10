@@ -372,6 +372,103 @@ export const MITRE_ATTACK_OBJECT_DESCRIPTIONS: Record<string, string> = {
   "x-mitre-asset": "A device or system found in an environment, mainly ICS, such as a PLC or workstation, that techniques may target."
 };
 
+// ── MITRE ATT&CK Kill Chain Phases (Enterprise Tactics) ─────────────────
+
+/**
+ * Descriptions for the phase_name values used when kill_chain_name is
+ * "mitre-attack". These are the 14 Enterprise ATT&CK tactics, listed in
+ * matrix order. The key is the phase_name (the tactic's shortname); the
+ * trailing comment gives the tactic ID and display name.
+ *
+ * Note: Mobile and ICS use different kill_chain_name values
+ * ("mitre-mobile-attack" and "mitre-ics-attack") with their own tactics.
+ */
+export const MITRE_ATTACK_KILL_CHAIN_PHASES: Record<string, string> = {
+  "reconnaissance": "The attacker is gathering information to plan the operation, such as details about the target's people, systems, or networks.", // TA0043 Reconnaissance
+  "resource-development": "The attacker is setting up the resources they will use, such as registering domains, building malware, or creating accounts.", // TA0042 Resource Development
+  "initial-access": "The attacker is trying to get their first foothold in the network, for example through phishing or a public-facing exploit.", // TA0001 Initial Access
+  "execution": "The attacker is trying to run malicious code on a local or remote system.", // TA0002 Execution
+  "persistence": "The attacker is trying to keep their foothold across restarts, credential changes, or other interruptions.", // TA0003 Persistence
+  "privilege-escalation": "The attacker is trying to gain higher-level permissions, such as moving from a normal user to admin or SYSTEM.", // TA0004 Privilege Escalation
+  "defense-evasion": "The attacker is trying to avoid detection, for example by disabling security tools, deleting logs, or hiding code.", // TA0005 Defense Evasion
+  "credential-access": "The attacker is trying to steal account names and passwords, for example through keylogging or credential dumping.", // TA0006 Credential Access
+  "discovery": "The attacker is trying to learn about the environment, such as what systems, accounts, and network resources exist.", // TA0007 Discovery
+  "lateral-movement": "The attacker is trying to move through the environment, hopping from one system to another to reach their target.", // TA0008 Lateral Movement
+  "collection": "The attacker is gathering the data they are after, such as files, emails, or screen captures, ahead of exfiltration.", // TA0009 Collection
+  "command-and-control": "The attacker is communicating with compromised systems to control them, often disguised as normal traffic.", // TA0011 Command and Control
+  "exfiltration": "The attacker is trying to steal data, moving it out of the network, often compressed or encrypted to avoid notice.", // TA0010 Exfiltration
+  "impact": "The attacker is trying to disrupt, destroy, or manipulate systems and data, for example through ransomware or wiping.", // TA0040 Impact
+};
+
+// ── MITRE ATT&CK Mobile Kill Chain Phases (Mobile Tactics) ──────────────
+
+/**
+ * Descriptions for the phase_name values used when kill_chain_name is
+ * "mitre-mobile-attack". These are the 12 Mobile ATT&CK tactics, in matrix
+ * order. Key is the phase_name (shortname); trailing comment gives the
+ * tactic ID and display name.
+ *
+ * Note: Mobile no longer includes the old Network Effects (TA0038) and
+ * Remote Service Effects (TA0039) tactics, which were deprecated. Older
+ * feeds may still reference them.
+ */
+export const MITRE_MOBILE_KILL_CHAIN_PHASES: Record<string, string> = {
+  "initial-access": "The attacker is trying to get onto the device, for example through a malicious app or a phishing link.", // TA0027 Initial Access
+  "execution": "The attacker is trying to run malicious code on the device.", // TA0041 Execution
+  "persistence": "The attacker is trying to keep their foothold on the device across reboots and other interruptions.", // TA0028 Persistence
+  "privilege-escalation": "The attacker is trying to gain higher-level permissions on the device, such as root or admin.", // TA0029 Privilege Escalation
+  "defense-evasion": "The attacker is trying to avoid being detected by the user or by security software.", // TA0030 Defense Evasion
+  "credential-access": "The attacker is trying to steal account names, passwords, or other secrets that unlock resources.", // TA0031 Credential Access
+  "discovery": "The attacker is trying to learn about the device and its environment.", // TA0032 Discovery
+  "lateral-movement": "The attacker is trying to move from the device to other systems or devices.", // TA0033 Lateral Movement
+  "collection": "The attacker is gathering data of interest, such as messages, location, or audio, ahead of exfiltration.", // TA0035 Collection
+  "command-and-control": "The attacker is communicating with compromised devices to control them.", // TA0037 Command and Control
+  "exfiltration": "The attacker is trying to steal data, moving it off the device.", // TA0036 Exfiltration
+  "impact": "The attacker is trying to manipulate, interrupt, or destroy the device and its data.", // TA0034 Impact
+};
+
+// ── MITRE ATT&CK ICS Kill Chain Phases (ICS Tactics) ────────────────────
+
+/**
+ * Descriptions for the phase_name values used when kill_chain_name is
+ * "mitre-ics-attack". These are the 12 ICS ATT&CK tactics, in matrix order.
+ * Key is the phase_name (shortname); trailing comment gives the tactic ID
+ * and display name.
+ *
+ * Note: ICS uses the shortname "evasion", not "defense-evasion", and adds
+ * two OT-specific tactics (Inhibit Response Function, Impair Process
+ * Control) that do not exist in Enterprise or Mobile.
+ */
+export const MITRE_ICS_KILL_CHAIN_PHASES: Record<string, string> = {
+  "initial-access": "The attacker is trying to get into the ICS environment, for example through internet-exposed devices or the IT network.", // TA0108 Initial Access
+  "execution": "The attacker is trying to run code or manipulate system functions, parameters, and data in an unauthorized way.", // TA0104 Execution
+  "persistence": "The attacker is trying to maintain their foothold in the ICS environment across restarts and credential changes.", // TA0110 Persistence
+  "privilege-escalation": "The attacker is trying to gain higher-level permissions within the ICS environment.", // TA0111 Privilege Escalation
+  "evasion": "The attacker is trying to avoid security defenses and detection. The shortname here is 'evasion', not 'defense-evasion'.", // TA0103 Evasion
+  "discovery": "The attacker is locating information to assess and identify targets, such as devices and control logic.", // TA0102 Discovery
+  "lateral-movement": "The attacker is trying to move through the ICS environment, often pivoting between IT and OT systems.", // TA0109 Lateral Movement
+  "collection": "The attacker is gathering data and domain knowledge about the ICS environment to inform their goal.", // TA0100 Collection
+  "command-and-control": "The attacker is communicating with and controlling compromised systems, controllers, and platforms in the ICS environment.", // TA0101 Command and Control
+  "inhibit-response-function": "The attacker is trying to stop safety, protection, and operator-intervention functions from responding to a hazard or unsafe state.", // TA0107 Inhibit Response Function
+  "impair-process-control": "The attacker is trying to manipulate, disable, or damage physical control processes.", // TA0106 Impair Process Control
+  "impact": "The attacker is trying to manipulate, interrupt, or destroy ICS systems, data, and the surrounding physical environment.", // TA0105 Impact
+};
+
+// ── Kill Chain Name Descriptions ────────────────────────────────────────
+
+/**
+ * Descriptions for the kill_chain_name values themselves (the model a phase
+ * belongs to). Key is the kill_chain_name as it appears in the data.
+ *
+ * kill_chain_name is an open field in STIX, so other values can appear, but
+ * these are the ones you will see most often.
+ */
+export const KILL_CHAIN_NAME_DESCRIPTIONS: Record<string, string> = {
+  "mitre-attack": "A phase from MITRE ATT&CK for Enterprise. The phase_name is one of the 14 Enterprise tactics, such as 'initial-access'.",
+  "mitre-mobile-attack": "A phase from MITRE ATT&CK for Mobile, which covers attacks on iOS and Android devices. The phase_name is one of the 12 Mobile tactics.",
+  "mitre-ics-attack": "A phase from MITRE ATT&CK for ICS, which covers attacks on industrial control and OT systems. The phase_name is one of the 12 ICS tactics.",
+  "lockheed-martin-cyber-kill-chain": "A phase from Lockheed Martin's Cyber Kill Chain, the classic 7-stage model running from reconnaissance through to actions on objectives."
+};
 
 
 
@@ -427,4 +524,38 @@ export function getObjectDescription(objectType: string): string | undefined {
  */
 export function getRelationshipDescription(relationshipType: string): string | undefined {
   return STIX_RELATIONSHIP_DESCRIPTIONS[relationshipType];
+}
+
+/**
+ * Get a description for a kill chain phase (tactic).
+ * Checks the appropriate domain based on kill_chain_name.
+ *
+ * @param killChainName - The kill chain model (e.g., "mitre-attack", "mitre-mobile-attack", "mitre-ics-attack")
+ * @param phaseName - The phase/tactic name (e.g., "initial-access", "credential-access")
+ * @returns The phase description, or undefined if not found
+ */
+export function getKillChainPhaseDescription(
+  killChainName: string,
+  phaseName: string
+): string | undefined {
+  switch (killChainName) {
+    case 'mitre-attack':
+      return MITRE_ATTACK_KILL_CHAIN_PHASES[phaseName];
+    case 'mitre-mobile-attack':
+      return MITRE_MOBILE_KILL_CHAIN_PHASES[phaseName];
+    case 'mitre-ics-attack':
+      return MITRE_ICS_KILL_CHAIN_PHASES[phaseName];
+    default:
+      return undefined;
+  }
+}
+
+/**
+ * Get a description for a kill chain name (the model/domain itself).
+ *
+ * @param killChainName - The kill chain model (e.g., "mitre-attack", "lockheed-martin-cyber-kill-chain")
+ * @returns The kill chain name description, or undefined if not found
+ */
+export function getKillChainNameDescription(killChainName: string): string | undefined {
+  return KILL_CHAIN_NAME_DESCRIPTIONS[killChainName];
 }

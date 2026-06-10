@@ -22,7 +22,7 @@ import LoadingSpinner from './LoadingSpinner';
 import ErrorDisplay from './ErrorDisplay';
 import StixDescription from './StixDescription';
 import HelpBadge from './HelpBadge';
-import { getPropertyDescription, getObjectDescription, getRelationshipDescription } from '../constants/stixPropertyDescriptions';
+import { getPropertyDescription, getObjectDescription, getRelationshipDescription, getKillChainPhaseDescription, getKillChainNameDescription } from '../constants/stixPropertyDescriptions';
 
 interface Props {
   stixId: string;
@@ -251,12 +251,26 @@ function KillChainTable({ phases, objectType }: { phases: KillChainPhase[]; obje
             </TableRow>
           </TableHead>
           <TableBody>
-            {phases.map((p, i) => (
-              <TableRow key={i}>
-                <TableCell sx={{ ...tableBodyCell, color: COLORS.textMuted, fontFamily: 'monospace' }}>{p.kill_chain_name}</TableCell>
-                <TableCell sx={{ ...tableBodyCell, color: COLORS.textPrimary }}>{p.phase_name}</TableCell>
-              </TableRow>
-            ))}
+            {phases.map((p, i) => {
+              const killChainTooltip = getKillChainNameDescription(p.kill_chain_name);
+              const phaseTooltip = getKillChainPhaseDescription(p.kill_chain_name, p.phase_name);
+              return (
+                <TableRow key={i}>
+                  <TableCell sx={{ ...tableBodyCell, color: COLORS.textMuted, fontFamily: 'monospace' }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                      {p.kill_chain_name}
+                      {killChainTooltip && <HelpBadge tooltip={killChainTooltip} size="sm" placement="right" />}
+                    </Box>
+                  </TableCell>
+                  <TableCell sx={{ ...tableBodyCell, color: COLORS.textPrimary }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                      {p.phase_name}
+                      {phaseTooltip && <HelpBadge tooltip={phaseTooltip} size="sm" placement="right" />}
+                    </Box>
+                  </TableCell>
+                </TableRow>
+              );
+            })}
           </TableBody>
         </Table>
       </TableContainer>
