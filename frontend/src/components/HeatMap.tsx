@@ -49,24 +49,20 @@ const ALPHA2_TO_ALPHA3: Record<string, string> = {
 };
 
 // Fallback: match topojson geography names → alpha-3 when a location has no `country` field
-// Includes Natural Earth name variants used by world-atlas (e.g. "United States of America")
+// Matches topojson geography names → alpha-3. Includes Natural Earth variants
+// (e.g. "United States of America") alongside common short names.
 const COUNTRY_NAME_TO_ALPHA3: Record<string, string> = {
     'united states': 'USA', 'united states of america': 'USA',
     'russia': 'RUS', 'russian federation': 'RUS',
+    'china': 'CHN',
+    'iran': 'IRN', 'india': 'IND',
+    'germany': 'DEU', 'france': 'FRA', 'israel': 'ISR',
+    'australia': 'AUS', 'ukraine': 'UKR',
+    'united kingdom': 'GBR', 'great britain': 'GBR',
+    'canada': 'CAN', 'brazil': 'BRA', 'japan': 'JPN',
     'south korea': 'KOR', 'republic of korea': 'KOR',
     'north korea': 'PRK', 'dem. rep. korea': 'PRK',
-    'china': 'CHN', 'taiwan': 'TWN',
-    'czech republic': 'CZE', 'czechia': 'CZE',
-    'united kingdom': 'GBR', 'great britain': 'GBR',
-    'dr congo': 'COD', 'democratic republic of the congo': 'COD',
-    'republic of the congo': 'COG',
-    'ivory coast': 'CIV', "côte d'ivoire": 'CIV',
-    'bosnia and herzegovina': 'BIH', 'bosnia': 'BIH',
-    'iran': 'IRN', 'north korea': 'PRK', 'india': 'IND',
-    'germany': 'DEU', 'france': 'FRA', 'israel': 'ISR',
-    'australia': 'AUS', 'ukraine': 'UKR', 'united kingdom': 'GBR',
-    'canada': 'CAN', 'brazil': 'BRA', 'japan': 'JPN',
-    'south korea': 'KOR', 'pakistan': 'PAK', 'turkey': 'TUR',
+    'pakistan': 'PAK', 'turkey': 'TUR',
     'saudi arabia': 'SAU', 'vietnam': 'VNM', 'indonesia': 'IDN',
     'thailand': 'THA', 'taiwan': 'TWN', 'bangladesh': 'BGD',
     'nigeria': 'NGA', 'south africa': 'ZAF', 'mexico': 'MEX',
@@ -76,7 +72,7 @@ const COUNTRY_NAME_TO_ALPHA3: Record<string, string> = {
     'singapore': 'SGP', 'malaysia': 'MYS', 'egypt': 'EGY',
     'afghanistan': 'AFG', 'iraq': 'IRQ', 'syria': 'SYR',
     'kazakhstan': 'KAZ', 'georgia': 'GEO', 'belarus': 'BLR',
-    'romania': 'ROU', 'czech republic': 'CZE', 'hungary': 'HUN',
+    'romania': 'ROU', 'czech republic': 'CZE', 'czechia': 'CZE', 'hungary': 'HUN',
     'portugal': 'PRT', 'greece': 'GRC', 'finland': 'FIN',
     'norway': 'NOR', 'denmark': 'DNK', 'new zealand': 'NZL',
     'argentina': 'ARG', 'chile': 'CHL', 'colombia': 'COL',
@@ -94,14 +90,16 @@ const COUNTRY_NAME_TO_ALPHA3: Record<string, string> = {
     'slovakia': 'SVK', 'slovenia': 'SVN', 'bulgaria': 'BGR',
     'estonia': 'EST', 'latvia': 'LVA', 'lithuania': 'LTU',
     'moldova': 'MDA', 'albania': 'ALB', 'north macedonia': 'MKD',
-    'bosnia': 'BIH', 'montenegro': 'MNE', 'cuba': 'CUB',
-    'ecuador': 'ECU', 'bolivia': 'BOL', 'paraguay': 'PRY',
+    'bosnia': 'BIH', 'bosnia and herzegovina': 'BIH', 'montenegro': 'MNE',
+    'cuba': 'CUB', 'ecuador': 'ECU', 'bolivia': 'BOL', 'paraguay': 'PRY',
     'uruguay': 'URY', 'costa rica': 'CRI', 'guatemala': 'GTM',
     'honduras': 'HND', 'nicaragua': 'NIC', 'panama': 'PAN',
     'dominican republic': 'DOM', 'jamaica': 'JAM', 'haiti': 'HTI',
     'zambia': 'ZMB', 'zimbabwe': 'ZWE', 'mozambique': 'MOZ',
     'angola': 'AGO', 'cameroon': 'CMR', 'senegal': 'SEN',
-    'ivory coast': 'CIV', 'uganda': 'UGA', 'rwanda': 'RWA',
+    'ivory coast': 'CIV', "côte d'ivoire": 'CIV', 'uganda': 'UGA', 'rwanda': 'RWA',
+    'dr congo': 'COD', 'democratic republic of the congo': 'COD',
+    'republic of the congo': 'COG',
 };
 
 const ALPHA3_TO_DISPLAY_NAME: Record<string, string> = Object.fromEntries(
