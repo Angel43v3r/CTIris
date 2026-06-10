@@ -477,16 +477,7 @@ export default function StixObjectDetail({ stixId, onDisplayNameChange }: Props)
               href={`${BASE}/stix/${encodeURIComponent(stixId)}`}
               target="_blank"
               rel="noopener noreferrer"
-              sx={{
-                color: COLORS.textTertiary,
-                borderColor: COLORS.dataContainerBorder,
-                fontSize: '0.7rem',
-                textTransform: 'none',
-                '&:hover': {
-                  borderColor: COLORS.dataContainerBorderHover,
-                  bgcolor: COLORS.cardBackground,
-                },
-              }}
+              sx={{ color: COLORS.textPrimary, borderColor: COLORS.dataContainerBorderHover, textTransform: 'none', fontSize: '0.7rem' }}
             >
               View Raw JSON
             </Button>
