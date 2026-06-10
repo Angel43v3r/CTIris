@@ -14,6 +14,16 @@ interface CampaignData {
   last_seen?: string;
 }
 
+interface RawStixData {
+  stix_id: string;
+  type: string;
+  properties?: {
+    name?: string;
+    first_seen?: string;
+    last_seen?: string;
+  };
+}
+
 /**
  * Displays the 10 most recent STIX campaign objects by last_seen date.
  * Clicking a campaign navigates to that object's routed detail page.
@@ -32,14 +42,16 @@ export default function MostRecentCampaigns() {
         setLoading(true);
         const rows = await api.stix('campaign', 1000, 0, controller.signal);
 
-        const formatted: CampaignData[] = rows.map((r) => {
+        const rawRows = (rows as RawStixData[]) || [];
+
+        const formatted: CampaignData[] = rawRows.map((r) => {
           const props = r.properties || {};
           return {
             stix_id: r.stix_id,
-            name: (props.name as string) || r.stix_id,
+            name: props.name || r.stix_id,
             type: r.type,
-            first_seen: props.first_seen as string | undefined,
-            last_seen: props.last_seen as string | undefined,
+            first_seen: props.first_seen,
+            last_seen: props.last_seen,
           };
         });
 
