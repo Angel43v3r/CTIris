@@ -111,7 +111,6 @@ export default function TargetedIndustries() {
                     >
                         <PolarGrid stroke={COLORS.dataContainerBorder} />
                         <PolarAngleAxis dataKey='label' tick={{ fill: COLORS.textMuted, fontSize: 12 }} />
-                        <PolarRadiusAxis tick={{ fill: COLORS.textPrimary, fontSize: 10 }} axisLine={false} />
                         <Radar
                             name='Intrusion Sets'
                             dataKey='value'
