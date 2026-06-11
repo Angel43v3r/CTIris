@@ -99,14 +99,16 @@ def list_stix(
 
     # Filter by search term if specified (case-insensitive search on stix_id or name)
     if search and search.strip():
-        search_pattern = f"%{search.strip()}%"
+        # Escape SQL LIKE wildcards in user input so they're treated as literals
+        escaped_search = search.strip().replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_")
+        search_pattern = f"%{escaped_search}%"
         conditions.append(
             sa.or_(
-                stix_objects_table.c.stix_id.ilike(search_pattern),
-                stix_objects_table.c.properties["name"].astext.ilike(search_pattern),
+                stix_objects_table.c.stix_id.ilike(search_pattern, escape="\\"),
+                stix_objects_table.c.properties["name"].astext.ilike(search_pattern, escape="\\"),
             )
         )
-
+        
     # Get total count with same filters
     count_stmt = sa.select(sa.func.count()).select_from(stix_objects_table)
     if conditions:

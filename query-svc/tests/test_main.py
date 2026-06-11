@@ -202,7 +202,6 @@ class TestListStix:
         app.dependency_overrides[get_db] = _override(conn)
         response = client.get("/stix?search=emotet")
         assert response.status_code == 200
-        assert response.status_code == 200
 
     def test_search_with_empty_string_ignores_filter(self):
         rows = [{"stix_id": STIX_ID, "type": "malware", "feed_id": FEED_ID}]
