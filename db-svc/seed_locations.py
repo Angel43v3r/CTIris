@@ -1,6 +1,7 @@
 """
 seed_locations.py — Import all STIX location objects from the OASIS Open
-cti-stix-common-objects repository into the stix_objects table.
+cti-stix-common-objects repository into the stix_objects table. This adds every
+country, US state, and some regions as location STIX objects to the DB. 
 
 Downloads the repo as a tar.gz archive (one HTTP request, no API key or
 rate-limit risk) and upserts every file found under objects/location/.

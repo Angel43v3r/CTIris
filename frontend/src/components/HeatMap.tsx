@@ -6,15 +6,27 @@ import { api } from '../api/client';
 import LoadingSpinner from './LoadingSpinner';
 import ErrorDisplay from './ErrorDisplay';
 
+/** TopoJSON world atlas served via CDN — react-simple-maps renders this but does not bundle any map data itself. */
 const GEO_URL = 'https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json';
 
 
+/** Aggregated relationship data for one country. */
 interface CountryEntry {
+    /** Display name shown in the tooltip (e.g. "United States"). */
     name: string;
+    /** Total relationships pointing at this country across all relationship types. */
     count: number;
+    /** Per-relationship-type breakdown, e.g. { targets: 3 }. Supports future multi-type maps. */
     breakdown: Record<string, number>;
 }
 
+/**
+ * The central data bucket for the heatmap, keyed by ISO 3166-1 alpha-3 (e.g. "USA").
+ * Alpha-3 is the shared key that connects two sources:
+ *   - API rows (which use alpha-2 country codes) converted via ALPHA2_TO_ALPHA3
+ *   - TopoJSON geography names converted via COUNTRY_NAME_TO_ALPHA3
+ * Both sides write/read the same bucket, so the map can color each country correctly.
+ */
 interface CountryMap {
     [isoAlpha3: string]: CountryEntry;
 }
@@ -109,6 +121,7 @@ const ALPHA3_TO_DISPLAY_NAME: Record<string, string> = Object.fromEntries(
     ])
 );
 
+/** Returns a heatmap fill color scaled relative to the highest count across all countries. */
 function getCountryColor(count: number, maxCount: number): string {
     if (!count || count === 0) return COLORS.heatmapBase;
     const intensity = count / maxCount;
@@ -118,6 +131,7 @@ function getCountryColor(count: number, maxCount: number): string {
     return COLORS.heatmapCritical;
 }
 
+/** Formats the hover tooltip string for a country that has relationship data. */
 function buildTooltipLabel(displayName: string, count: number): string {
     return `${displayName}: ${count} target relationship${count !== 1 ? 's' : ''}`;
 }
@@ -128,21 +142,28 @@ export default function Heatmap() {
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
+        // AbortController lets us cancel the fetch if the component unmounts mid-request,
+        // preventing state updates on an unmounted component.
         const controller = new AbortController();
 
-        api.geoHeatmap(controller.signal)
+        api.geoHeatmap('targets', controller.signal)
             .then((rows) => {
+                // The .then callback may still fire even after abort — bail out early.
                 if (controller.signal.aborted) return;
 
                 const aggregated: CountryMap = {};
 
                 rows.forEach(({ country, location_name, relationship_type, count }) => {
+                    // Primary: use the alpha-2 country code from the STIX location object.
+                    // Fallback: match by location name for objects that omit the country field.
                     let iso3: string | undefined;
                     if (country) iso3 = ALPHA2_TO_ALPHA3[country.toUpperCase()];
                     if (!iso3 && location_name) iso3 = COUNTRY_NAME_TO_ALPHA3[location_name.toLowerCase()];
-                    if (!iso3) return;
+                    if (!iso3) return; // skip rows we can't place on the map
 
                     if (!aggregated[iso3]) {
+                        // Prefer the canonical display name from our lookup; fall back to
+                        // the location's own name, then the alpha-3 code as a last resort.
                         aggregated[iso3] = {
                             name: ALPHA3_TO_DISPLAY_NAME[iso3] || location_name || iso3,
                             count: 0,
@@ -163,6 +184,7 @@ export default function Heatmap() {
                 if (!controller.signal.aborted) setLoading(false);
             });
 
+        // Cancel the in-flight request when the component unmounts.
         return () => controller.abort();
     }, []);
 
