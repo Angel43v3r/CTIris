@@ -115,16 +115,20 @@ def upsert(engine: sa.Engine, objects: list[dict]) -> int:
         for obj in objects
     ]
 
+    stix_ids = [obj["id"] for obj in objects]
     with engine.begin() as conn:
+        # Count by stix_id rather than type so this works for any object type.
         before: int = conn.execute(
-            sa.text("SELECT COUNT(*) FROM stix_objects WHERE type = 'location'")
+            sa.text("SELECT COUNT(*) FROM stix_objects WHERE stix_id = ANY(:ids)"),
+            {"ids": stix_ids},
         ).scalar_one()
 
         # SQLAlchemy 2.x executes a list of dicts in executemany mode
         conn.execute(_INSERT, rows)
 
         after: int = conn.execute(
-            sa.text("SELECT COUNT(*) FROM stix_objects WHERE type = 'location'")
+            sa.text("SELECT COUNT(*) FROM stix_objects WHERE stix_id = ANY(:ids)"),
+            {"ids": stix_ids},
         ).scalar_one()
 
     return after - before
