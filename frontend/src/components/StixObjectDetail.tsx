@@ -21,6 +21,8 @@ import { COLORS } from '../constants/themeColors';
 import LoadingSpinner from './LoadingSpinner';
 import ErrorDisplay from './ErrorDisplay';
 import StixDescription from './StixDescription';
+import HelpBadge from './HelpBadge';
+import { getPropertyDescription, getObjectDescription, getRelationshipDescription, getKillChainPhaseDescription, getKillChainNameDescription } from '../constants/stixPropertyDescriptions';
 
 interface Props {
   stixId: string;
@@ -198,10 +200,13 @@ const tableBodyCell = {
 
 // ── Sub-components ────────────────────────────────────────────────────────────
 
-function MetaRow({ label, value }: { label: string; value: string }) {
+function MetaRow({ label, value, tooltip }: { label: string; value: string; tooltip?: string }) {
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.25 }}>
-      <Typography sx={sectionLabel}>{label}</Typography>
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+        <Typography sx={sectionLabel}>{label}</Typography>
+        {tooltip && <HelpBadge tooltip={tooltip} size="sm" placement="right" />}
+      </Box>
       <Typography sx={{ color: COLORS.textPrimary, fontFamily: 'monospace', fontSize: '0.8rem', wordBreak: 'break-all' }}>
         {value}
       </Typography>
@@ -221,25 +226,51 @@ interface ExternalReference {
   description?: string;
 }
 
-function KillChainTable({ phases }: { phases: KillChainPhase[] }) {
+function KillChainTable({ phases, objectType }: { phases: KillChainPhase[]; objectType?: string }) {
+  const tooltip = getPropertyDescription('kill_chain_phases', objectType);
   return (
     <Box>
-      <Typography sx={sectionLabel}>Kill Chain Phases</Typography>
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mb: 0.75 }}>
+        <Typography sx={sectionLabel}>Kill Chain Phases</Typography>
+        {tooltip && <HelpBadge tooltip={tooltip} size="sm" placement="right" />}
+      </Box>
       <TableContainer component={Paper} sx={{ bgcolor: COLORS.headerBackground, border: `1px solid ${COLORS.dataContainerBorder}`, borderRadius: 2 }}>
         <Table size="small">
           <TableHead>
             <TableRow>
-              <TableCell sx={tableHeadCell}>Kill Chain</TableCell>
-              <TableCell sx={tableHeadCell}>Phase</TableCell>
+              <TableCell sx={{ ...tableHeadCell, display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                <span>Kill Chain</span>
+                <HelpBadge tooltip="A model breaking an attack into sequential phases (e.g., delivery → exploitation → C2). Each STIX object can be tagged to a phase, showing where in the attack lifecycle it applies." size="sm" placement="top" />
+              </TableCell>
+              <TableCell sx={tableHeadCell}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                  <span>Phase</span>
+                  <HelpBadge tooltip="Where this object fits in the attack lifecycle." size="sm" placement="top" />
+                </Box>
+              </TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {phases.map((p, i) => (
-              <TableRow key={i}>
-                <TableCell sx={{ ...tableBodyCell, color: COLORS.textMuted, fontFamily: 'monospace' }}>{p.kill_chain_name}</TableCell>
-                <TableCell sx={{ ...tableBodyCell, color: COLORS.textPrimary }}>{p.phase_name}</TableCell>
-              </TableRow>
-            ))}
+            {phases.map((p, i) => {
+              const killChainTooltip = getKillChainNameDescription(p.kill_chain_name);
+              const phaseTooltip = getKillChainPhaseDescription(p.kill_chain_name, p.phase_name);
+              return (
+                <TableRow key={i}>
+                  <TableCell sx={{ ...tableBodyCell, color: COLORS.textMuted, fontFamily: 'monospace' }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                      {p.kill_chain_name}
+                      {killChainTooltip && <HelpBadge tooltip={killChainTooltip} size="sm" placement="right" />}
+                    </Box>
+                  </TableCell>
+                  <TableCell sx={{ ...tableBodyCell, color: COLORS.textPrimary }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                      {p.phase_name}
+                      {phaseTooltip && <HelpBadge tooltip={phaseTooltip} size="sm" placement="right" />}
+                    </Box>
+                  </TableCell>
+                </TableRow>
+              );
+            })}
           </TableBody>
         </Table>
       </TableContainer>
@@ -255,9 +286,24 @@ function ExternalRefsTable({ refs }: { refs: ExternalReference[] }) {
         <Table size="small">
           <TableHead>
             <TableRow>
-              <TableCell sx={tableHeadCell}>Source</TableCell>
-              <TableCell sx={tableHeadCell}>ID</TableCell>
-              <TableCell sx={tableHeadCell}>URL</TableCell>
+              <TableCell sx={tableHeadCell}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                  <span>Source</span>
+                  <HelpBadge tooltip="The name of the external source providing this reference" size="sm" placement="top" />
+                </Box>
+              </TableCell>
+              <TableCell sx={tableHeadCell}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                  <span>ID</span>
+                  <HelpBadge tooltip="The identifier used by the external source" size="sm" placement="top" />
+                </Box>
+              </TableCell>
+              <TableCell sx={tableHeadCell}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                  <span>URL</span>
+                  <HelpBadge tooltip="A link to the external reference documentation or resource" size="sm" placement="top" />
+                </Box>
+              </TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -284,10 +330,12 @@ function AdditionalPropertiesTable({
   entries,
   navigate,
   propertyRefLookup,
+  objectType,
 }: {
   entries: [string, unknown][];
   navigate: (path: string) => void;
   propertyRefLookup: Record<string, StixPropertyRef>;
+  objectType?: string;
 }) {
   return (
     <TableContainer component={Paper} sx={{ bgcolor: COLORS.headerBackground, border: `1px solid ${COLORS.dataContainerBorder}`, borderRadius: 2 }}>
@@ -299,16 +347,22 @@ function AdditionalPropertiesTable({
           </TableRow>
         </TableHead>
         <TableBody>
-          {entries.map(([key, val]) => (
-            <TableRow key={key}>
-              <TableCell sx={{ ...tableBodyCell, color: COLORS.textMuted, fontFamily: 'monospace', fontSize: '0.75rem', width: { xs: '38%', sm: '28%' }, verticalAlign: 'top', textTransform: 'none' }}>
-                {formatPropertyName(key)}
-              </TableCell>
-              <TableCell sx={{ ...tableBodyCell, color: COLORS.textPrimary, verticalAlign: 'top' }}>
-                <AdditionalPropertyValue value={val} navigate={navigate} propertyRefLookup={propertyRefLookup} />
-              </TableCell>
-            </TableRow>
-          ))}
+          {entries.map(([key, val]) => {
+            const propTooltip = getPropertyDescription(key, objectType);
+            return (
+              <TableRow key={key}>
+                <TableCell sx={{ ...tableBodyCell, color: COLORS.textMuted, fontFamily: 'monospace', fontSize: '0.75rem', width: { xs: '38%', sm: '28%' }, verticalAlign: 'top', textTransform: 'none' }}>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                    <span>{formatPropertyName(key)}</span>
+                    {propTooltip && <HelpBadge tooltip={propTooltip} size="sm" placement="right" />}
+                  </Box>
+                </TableCell>
+                <TableCell sx={{ ...tableBodyCell, color: COLORS.textPrimary, verticalAlign: 'top' }}>
+                  <AdditionalPropertyValue value={val} navigate={navigate} propertyRefLookup={propertyRefLookup} />
+                </TableCell>
+              </TableRow>
+            );
+          })}
         </TableBody>
       </Table>
     </TableContainer>
@@ -334,9 +388,24 @@ function RelationshipTable({
         <Table size="small">
           <TableHead>
             <TableRow>
-              <TableCell sx={tableHeadCell}>Relationship</TableCell>
-              <TableCell sx={tableHeadCell}>Type</TableCell>
-              <TableCell sx={tableHeadCell}>Name / ID</TableCell>
+              <TableCell sx={tableHeadCell}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                  <span>Relationship</span>
+                  <HelpBadge tooltip="The type of relationship connecting these STIX objects" size="sm" placement="top" />
+                </Box>
+              </TableCell>
+              <TableCell sx={tableHeadCell}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                  <span>Type</span>
+                  <HelpBadge tooltip="The STIX object type of the related object" size="sm" placement="top" />
+                </Box>
+              </TableCell>
+              <TableCell sx={tableHeadCell}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                  <span>Name / ID</span>
+                  <HelpBadge tooltip="The name or identifier of the related STIX object" size="sm" placement="top" />
+                </Box>
+              </TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -354,6 +423,7 @@ function RelationshipTable({
                 const isNavigable = isRef(r)
                   ? (r.target_present ?? true)
                   : (r.source_present ?? true);
+                const relTooltip = getRelationshipDescription(r.relationship_type);
                 return (
                   <TableRow
                     key={i}
@@ -364,7 +434,10 @@ function RelationshipTable({
                     }}
                   >
                     <TableCell sx={{ ...tableBodyCell, color: COLORS.textQuaternary, fontFamily: 'monospace', fontSize: '0.75rem' }}>
-                      {r.relationship_type}
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                        <span>{r.relationship_type}</span>
+                        {relTooltip && <HelpBadge tooltip={relTooltip} size="sm" placement="right" />}
+                      </Box>
                     </TableCell>
                     <TableCell sx={{ ...tableBodyCell, color: COLORS.textMuted, fontFamily: 'monospace', fontSize: '0.72rem' }}>
                       {type ?? '—'}
@@ -465,11 +538,6 @@ export default function StixObjectDetail({ stixId, onDisplayNameChange }: Props)
       {!objectLoading && !objectErrorMessage && stix && (
         <>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, flexWrap: 'wrap' }}>
-            <Chip
-              label={stix.type}
-              size="small"
-              sx={{ bgcolor: COLORS.textQuaternary, color: COLORS.backgroundDefault, fontWeight: 'bold', fontSize: '0.75rem', flexShrink: 0 }}
-            />
             <Button
               variant="outlined"
               size="small"
@@ -487,11 +555,52 @@ export default function StixObjectDetail({ stixId, onDisplayNameChange }: Props)
 
           {/* Meta grid */}
           <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' }, gap: 2 }}>
-            <MetaRow label="STIX ID" value={stix.stix_id} />
-            <MetaRow label="Feed ID" value={stix.feed_id ?? '—'} />
-            <MetaRow label="Ingested At" value={formatDate(stix.ingested_at)} />
-            <MetaRow label="STIX Created" value={formatDate(stix.stix_created)} />
-            <MetaRow label="STIX Modified" value={formatDate(stix.stix_modified)} />
+            {/* Object Name */}
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.25 }}>
+              <Typography sx={sectionLabel}>Object Name</Typography>
+              <Typography sx={{ color: props.name ? COLORS.textPrimary : COLORS.textMuted, fontFamily: 'monospace', fontSize: '0.8rem', wordBreak: 'break-all' }}>
+                {props.name as string || stix.stix_id}
+              </Typography>
+            </Box>
+
+            {/* Object Type */}
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.25 }}>
+              <Typography sx={sectionLabel}>Object Type</Typography>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                <Typography sx={{ color: COLORS.textPrimary, fontFamily: 'monospace', fontSize: '0.8rem', wordBreak: 'break-all' }}>
+                  {stix.type}
+                </Typography>
+                {getObjectDescription(stix.type) && (
+                  <HelpBadge tooltip={getObjectDescription(stix.type)!} size="sm" placement="right" />
+                )}
+              </Box>
+            </Box>
+
+            <MetaRow
+              label="STIX ID"
+              value={stix.stix_id}
+              tooltip={getPropertyDescription('id')}
+            />
+            <MetaRow
+              label="Feed ID"
+              value={stix.feed_id ?? '—'}
+              tooltip="The CTIris feed identifier indicating which TAXII feed this object was ingested from"
+            />
+            <MetaRow
+              label="Ingested At"
+              value={formatDate(stix.ingested_at)}
+              tooltip="The timestamp when CTIris first ingested this object from its source feed"
+            />
+            <MetaRow
+              label="STIX Created"
+              value={formatDate(stix.stix_created)}
+              tooltip={getPropertyDescription('created', stix.type)}
+            />
+            <MetaRow
+              label="STIX Modified"
+              value={formatDate(stix.stix_modified)}
+              tooltip={getPropertyDescription('modified', stix.type)}
+            />
           </Box>
 
           {/* Description */}
@@ -507,7 +616,12 @@ export default function StixObjectDetail({ stixId, onDisplayNameChange }: Props)
           {/* Aliases */}
           {aliases.length > 0 && (
             <Box>
-              <Typography sx={sectionLabel}>Tracked Aliases</Typography>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mb: 0.75 }}>
+                <Typography sx={sectionLabel}>Tracked Aliases</Typography>
+                {getPropertyDescription('aliases', stix.type) && (
+                  <HelpBadge tooltip={getPropertyDescription('aliases', stix.type)!} size="sm" placement="right" />
+                )}
+              </Box>
               <Box sx={{ display: 'flex', gap: 0.75, flexWrap: 'wrap' }}>
                 {aliases.map(a => (
                   <Chip key={a} label={a} size="small" variant="outlined"
@@ -520,7 +634,12 @@ export default function StixObjectDetail({ stixId, onDisplayNameChange }: Props)
           {/* Labels */}
           {labels.length > 0 && (
             <Box>
-              <Typography sx={sectionLabel}>Labels</Typography>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mb: 0.75 }}>
+                <Typography sx={sectionLabel}>Labels</Typography>
+                {getPropertyDescription('labels') && (
+                  <HelpBadge tooltip={getPropertyDescription('labels')!} size="sm" placement="right" />
+                )}
+              </Box>
               <Box sx={{ display: 'flex', gap: 0.75, flexWrap: 'wrap' }}>
                 {labels.map(l => (
                   <Chip key={l} label={l} size="small"
@@ -533,7 +652,15 @@ export default function StixObjectDetail({ stixId, onDisplayNameChange }: Props)
           {/* Date range (campaign / indicator) */}
           {(firstSeen || lastSeen || validFrom || validUntil) && (
             <Box>
-              <Typography sx={sectionLabel}>{firstSeen || lastSeen ? 'Activity Window' : 'Valid Window'}</Typography>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mb: 0.75 }}>
+                <Typography sx={sectionLabel}>{firstSeen || lastSeen ? 'Activity Window' : 'Valid Window'}</Typography>
+                {(firstSeen || lastSeen) && getPropertyDescription('first_seen', stix.type) && (
+                  <HelpBadge tooltip={getPropertyDescription('first_seen', stix.type)!} size="sm" placement="right" />
+                )}
+                {(validFrom || validUntil) && !firstSeen && !lastSeen && getPropertyDescription('valid_from', stix.type) && (
+                  <HelpBadge tooltip={getPropertyDescription('valid_from', stix.type)!} size="sm" placement="right" />
+                )}
+              </Box>
               <Box sx={{ display: 'flex', gap: 3, flexWrap: 'wrap' }}>
                 {(firstSeen || validFrom) && (
                   <Box>
@@ -560,7 +687,7 @@ export default function StixObjectDetail({ stixId, onDisplayNameChange }: Props)
           )}
 
           {/* Kill Chain Phases */}
-          {killChainPhases.length > 0 && <KillChainTable phases={killChainPhases} />}
+          {killChainPhases.length > 0 && <KillChainTable phases={killChainPhases} objectType={stix.type} />}
 
           {/* External References */}
           {externalRefs.length > 0 && <ExternalRefsTable refs={externalRefs} />}
@@ -569,7 +696,12 @@ export default function StixObjectDetail({ stixId, onDisplayNameChange }: Props)
           {pattern && (
             <Box>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.75 }}>
-                <Typography sx={sectionLabel}>Pattern</Typography>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                  <Typography sx={sectionLabel}>Pattern</Typography>
+                  {getPropertyDescription('pattern', stix.type) && (
+                    <HelpBadge tooltip={getPropertyDescription('pattern', stix.type)!} size="sm" placement="right" />
+                  )}
+                </Box>
                 {patternType && (
                   <Chip label={patternType} size="small"
                     sx={{ bgcolor: 'transparent', color: COLORS.textMuted, border: `1px solid ${COLORS.dataContainerBorder}`, fontSize: '0.65rem', fontFamily: 'monospace', height: 18 }} />
@@ -594,7 +726,7 @@ export default function StixObjectDetail({ stixId, onDisplayNameChange }: Props)
             <Box>
               <Typography sx={sectionLabel}>Additional Properties</Typography>
               <Box sx={{ mt: 0.25 }}>
-                <AdditionalPropertiesTable entries={extraEntries} navigate={navigate} propertyRefLookup={propertyRefLookup} />
+                <AdditionalPropertiesTable entries={extraEntries} navigate={navigate} propertyRefLookup={propertyRefLookup} objectType={stix.type} />
               </Box>
             </Box>
           )}
@@ -605,9 +737,16 @@ export default function StixObjectDetail({ stixId, onDisplayNameChange }: Props)
 
       {/* Relationship tables — render independently of object load state */}
       <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-        <Typography variant="h6" sx={{ color: COLORS.textPrimary, fontFamily: 'monospace', fontSize: '0.85rem', letterSpacing: 1.5, textTransform: 'uppercase' }}>
-          Relationships
-        </Typography>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+          <Typography variant="h6" sx={{ color: COLORS.textPrimary, fontFamily: 'monospace', fontSize: '0.85rem', letterSpacing: 1.5, textTransform: 'uppercase' }}>
+            Relationships
+          </Typography>
+          <HelpBadge
+            tooltip="STIX relationships connect objects together to form a graph. Each relationship has a type (like 'uses' or 'indicates') that describes how the objects are related."
+            size="sm"
+            placement="right"
+          />
+        </Box>
 
         {relsLoading && <LoadingSpinner />}
         {relsErrorMessage && <ErrorDisplay message={relsErrorMessage} />}

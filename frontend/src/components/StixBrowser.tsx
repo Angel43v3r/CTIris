@@ -1,5 +1,5 @@
 import { type FormEvent, useEffect, useState } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import {
   Box, Button, FormControl,
   InputAdornment, InputLabel, MenuItem, Pagination, Paper, Select,
@@ -42,11 +42,12 @@ function formatDate(d: string | null | undefined) {
  * Pagination: Page numbers controlled by ?page= URL param. Shows PAGE_SIZE
  * results per page with total count from X-Total-Count header.
  *
- * Detail view: clicking a row navigates to /stix/{id}, which renders the
- * routed STIX detail page.
+ * Detail route: clicking a row navigates to /stix/{id}. The parent layout
+ * renders the dedicated StixObjectDetail view for that route.
  */
 export default function StixBrowser() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [searchParams] = useSearchParams();
 
   // Derive filters directly from URL search params
@@ -224,7 +225,7 @@ export default function StixBrowser() {
                 {objects.map(obj => (
                   <TableRow
                     key={obj.stix_id}
-                    onClick={() => navigate('/stix/' + encodeURIComponent(obj.stix_id))}
+                    onClick={() => navigate('/stix/' + encodeURIComponent(obj.stix_id) + location.search)}
                     sx={{ cursor: 'pointer', '&:hover': { backgroundColor: COLORS.cardBackground, boxShadow: `0 4px 20px ${COLORS.hoverBoxShadow}` } }}
                   >
                     <TableCell sx={{ color: COLORS.textPrimary, maxWidth: 260, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
@@ -266,7 +267,6 @@ export default function StixBrowser() {
           )}
         </>
       )}
-
     </Box>
   );
 }
