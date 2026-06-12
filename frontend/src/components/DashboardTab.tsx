@@ -11,8 +11,8 @@ import SectionHeader from './SectionHeader';
 import MostActiveThreats from './MostActiveThreats';
 import MostActiveMalware from './MostActiveMalware';
 import Heatmap from './HeatMap';
-import DonutChart from './DonutChart';
-import CampaignList from './MostRecentCampaigns';
+import TargetedIndustries from './TargetedIndustries';
+import MostRecentCampaigns from './MostRecentCampaigns';
 
 /**
  * Dashboard tab — stat cards and activity widgets.
@@ -97,32 +97,32 @@ export default function DashboardTab() {
         {/* ── HEATMAP ───────────────────────────────────────────────────────────*/}
         <Box sx={{ flex: 4, p: 1 }}>
           <SectionHeader
-            title="GLOBAL THREAT CONCENTRATION MAP"
-            tooltip="Shows the geographic distribution of STIX objects based on mention frequency. Higher concentrations appear in darker red. Select a country to view the number of reference."
+            title="TARGETED COUNTRIES"
+            tooltip="Shows countries targeted by STIX objects (threat actors, malware, campaigns, intrusion sets, tools, and attack patterns) via targets relationships. Higher concentrations appear in darker red."
             gutterBottom={false}
           />
           <Heatmap />
         </Box>
 
         <Box sx = {{ flexDirection: 'row' }}>
-          {/* ── DONUT CHART ─────────────────────────────────────────────────────────── */}
+          {/* ── TARGETED INDUSTRIES ─────────────────────────────────────────────────────────── */}
           <Box sx={{ flex: 1, p: 1 }}>
             <SectionHeader
-              title="TARGETED INDUSTRY"
+              title="TARGETED INDUSTRIES"
               tooltip="Shows the distribution of industries based on keyword matches within STIX object content."
               gutterBottom={false}
             />
-            <DonutChart />
+            <TargetedIndustries />
           </Box>
 
-          {/* ── CAMPAIGN LIST ─────────────────────────────────────────────────────────── */}
+          {/* ── MOST RECENT CAMPAIGNS ─────────────────────────────────────────────────────────── */}
           <Box sx={{ p: 1, mt: 3 }}>
             <SectionHeader
-              title="CAMPAIGN LIST"
-              tooltip="Shows a list of observed campaigns. Select a campaign to view detailed intelligence."
+              title="MOST RECENT CAMPAIGNS"
+              tooltip="Shows the top 10 most recent campaigns. Select a campaign to view detailed intelligence."
               gutterBottom={false}
             />
-            <CampaignList />
+            <MostRecentCampaigns />
           </Box>
         </Box>
 
