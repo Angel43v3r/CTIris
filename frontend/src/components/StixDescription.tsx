@@ -24,7 +24,7 @@ function renderDescriptionText(text: string) {
                     component="code"
                     sx={{
                         fontFamily: 'monospace',
-                        backgroundColor: 'rgba(255,255,255,0.08)',
+                        backgroundColor: COLORS.iconHoverFooter,
                         borderRadius: '3px',
                         padding: '1px 5px',
                         fontSize: '0.875em',
@@ -45,11 +45,11 @@ function renderDescriptionText(text: string) {
                     rel="noopener noreferrer"
                     onClick={(e) => e.stopPropagation()}
                     sx={{
-                        color: COLORS.textTertiary ?? '#4fc3f7',
+                        color: COLORS.textTertiary,
                         textDecoration: 'underline',
                         fontWeight: 600,
                         cursor: 'pointer',
-                        '&:hover': { color: '#ffffff' }
+                        '&:hover': { color: COLORS.textPrimary }
                     }}
                 >
                     {linkText}
