@@ -26,7 +26,7 @@ function getName(obj: StixObject): string {
 function formatDate(d: string | null | undefined) {
   if (!d) return '—';
   const date = new Date(d);
-  const datePart = date.toISOString().split('T')[0] // YYYY-MM-DD
+  const datePart = date.toLocaleDateString('en-CA'); // YYYY-MM-DD format
   const timePart = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   return `${datePart} ${timePart}`;
 }
