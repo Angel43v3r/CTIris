@@ -13,10 +13,10 @@ function statusColor(status: Feed['status']): 'success' | 'warning' | 'error' {
   return 'error';
 }
 
-/** Returns 'Never' when a feed has never successfully synced, otherwise a locale date string. */
+/** Returns 'Never' when a feed has never successfully synced, otherwise a YYYY-MM-DD date string. */
 function formatDate(d: string | null) {
   if (!d) return 'Never';
-  return new Date(d).toLocaleString();
+  return new Date(d).toISOString().split('T')[0];
 }
 
 /**
