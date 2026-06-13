@@ -11,6 +11,7 @@
     "alembic",
     "recharts",
     "browsable",
-    "upsert"
+    "upsert",
+    "defence"
   ]
 }
