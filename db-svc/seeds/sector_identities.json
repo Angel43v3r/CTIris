@@ -1,0 +1,276 @@
+{
+  "type": "bundle",
+  "id": "bundle--a5907201-3e5b-49db-a7b7-b30d0c55f38e",
+  "objects": [
+    {
+      "type": "identity",
+      "spec_version": "2.1",
+      "id": "identity--3821305b-90f0-5cae-b21c-7d1d7616bcc1",
+      "created": "2026-06-13T00:00:00.000Z",
+      "modified": "2026-06-13T00:00:00.000Z",
+      "name": "Agriculture Sector",
+      "identity_class": "class",
+      "sectors": ["agriculture"]
+    },
+    {
+      "type": "identity",
+      "spec_version": "2.1",
+      "id": "identity--a3ba5d77-3040-57a1-b3fc-ee446e56e776",
+      "created": "2026-06-13T00:00:00.000Z",
+      "modified": "2026-06-13T00:00:00.000Z",
+      "name": "Aerospace Sector",
+      "identity_class": "class",
+      "sectors": ["aerospace"]
+    },
+    {
+      "type": "identity",
+      "spec_version": "2.1",
+      "id": "identity--3ea5c8f6-d731-50bd-8ef4-82bb6da0a0d0",
+      "created": "2026-06-13T00:00:00.000Z",
+      "modified": "2026-06-13T00:00:00.000Z",
+      "name": "Automotive Sector",
+      "identity_class": "class",
+      "sectors": ["automotive"]
+    },
+    {
+      "type": "identity",
+      "spec_version": "2.1",
+      "id": "identity--96f15ea4-434c-57c4-9309-bcf2c7615878",
+      "created": "2026-06-13T00:00:00.000Z",
+      "modified": "2026-06-13T00:00:00.000Z",
+      "name": "Communications Sector",
+      "identity_class": "class",
+      "sectors": ["communications"]
+    },
+    {
+      "type": "identity",
+      "spec_version": "2.1",
+      "id": "identity--ad652a42-d66e-5d48-9548-a87ec025c115",
+      "created": "2026-06-13T00:00:00.000Z",
+      "modified": "2026-06-13T00:00:00.000Z",
+      "name": "Construction Sector",
+      "identity_class": "class",
+      "sectors": ["construction"]
+    },
+    {
+      "type": "identity",
+      "spec_version": "2.1",
+      "id": "identity--7dee7177-4819-5439-a8df-fc477c959b98",
+      "created": "2026-06-13T00:00:00.000Z",
+      "modified": "2026-06-13T00:00:00.000Z",
+      "name": "Defence Sector",
+      "identity_class": "class",
+      "sectors": ["defence"]
+    },
+    {
+      "type": "identity",
+      "spec_version": "2.1",
+      "id": "identity--b6e0915d-f489-5a4a-89ec-bcc644f5281e",
+      "created": "2026-06-13T00:00:00.000Z",
+      "modified": "2026-06-13T00:00:00.000Z",
+      "name": "Education Sector",
+      "identity_class": "class",
+      "sectors": ["education"]
+    },
+    {
+      "type": "identity",
+      "spec_version": "2.1",
+      "id": "identity--e54a070f-23d8-50cd-8728-aebe06af76e3",
+      "created": "2026-06-13T00:00:00.000Z",
+      "modified": "2026-06-13T00:00:00.000Z",
+      "name": "Energy Sector",
+      "identity_class": "class",
+      "sectors": ["energy"]
+    },
+    {
+      "type": "identity",
+      "spec_version": "2.1",
+      "id": "identity--c82dd142-5b4a-500a-a46c-3ff13e63c572",
+      "created": "2026-06-13T00:00:00.000Z",
+      "modified": "2026-06-13T00:00:00.000Z",
+      "name": "Entertainment Sector",
+      "identity_class": "class",
+      "sectors": ["entertainment"]
+    },
+    {
+      "type": "identity",
+      "spec_version": "2.1",
+      "id": "identity--cf8e4429-a05b-53fd-bb50-8dd0a8770de4",
+      "created": "2026-06-13T00:00:00.000Z",
+      "modified": "2026-06-13T00:00:00.000Z",
+      "name": "Financial Services Sector",
+      "identity_class": "class",
+      "sectors": ["financial-services"]
+    },
+    {
+      "type": "identity",
+      "spec_version": "2.1",
+      "id": "identity--91e2d90d-3b97-546f-9db3-090e7f0a5031",
+      "created": "2026-06-13T00:00:00.000Z",
+      "modified": "2026-06-13T00:00:00.000Z",
+      "name": "National Government Sector",
+      "identity_class": "class",
+      "sectors": ["government-national"]
+    },
+    {
+      "type": "identity",
+      "spec_version": "2.1",
+      "id": "identity--131bf71e-9c4a-5a87-80d3-b7f9cac5d902",
+      "created": "2026-06-13T00:00:00.000Z",
+      "modified": "2026-06-13T00:00:00.000Z",
+      "name": "Regional Government Sector",
+      "identity_class": "class",
+      "sectors": ["government-regional"]
+    },
+    {
+      "type": "identity",
+      "spec_version": "2.1",
+      "id": "identity--5facc331-bf11-5a6e-b467-36c2f135fd58",
+      "created": "2026-06-13T00:00:00.000Z",
+      "modified": "2026-06-13T00:00:00.000Z",
+      "name": "Local Government Sector",
+      "identity_class": "class",
+      "sectors": ["government-local"]
+    },
+    {
+      "type": "identity",
+      "spec_version": "2.1",
+      "id": "identity--3f3d9efd-cb5c-508b-9e20-6d1bef7c734c",
+      "created": "2026-06-13T00:00:00.000Z",
+      "modified": "2026-06-13T00:00:00.000Z",
+      "name": "Government Public Services Sector",
+      "identity_class": "class",
+      "sectors": ["government-public-services"]
+    },
+    {
+      "type": "identity",
+      "spec_version": "2.1",
+      "id": "identity--edf99fc9-bed1-5a5d-b33a-10d16e6ad237",
+      "created": "2026-06-13T00:00:00.000Z",
+      "modified": "2026-06-13T00:00:00.000Z",
+      "name": "Healthcare Sector",
+      "identity_class": "class",
+      "sectors": ["healthcare"]
+    },
+    {
+      "type": "identity",
+      "spec_version": "2.1",
+      "id": "identity--7db541ad-366c-5607-a246-09cd9f0c9d69",
+      "created": "2026-06-13T00:00:00.000Z",
+      "modified": "2026-06-13T00:00:00.000Z",
+      "name": "Hospitality and Leisure Sector",
+      "identity_class": "class",
+      "sectors": ["hospitality-leisure"]
+    },
+    {
+      "type": "identity",
+      "spec_version": "2.1",
+      "id": "identity--6c373784-6c1e-5bad-ad3a-0d92d0d1455b",
+      "created": "2026-06-13T00:00:00.000Z",
+      "modified": "2026-06-13T00:00:00.000Z",
+      "name": "Infrastructure Sector",
+      "identity_class": "class",
+      "sectors": ["infrastructure"]
+    },
+    {
+      "type": "identity",
+      "spec_version": "2.1",
+      "id": "identity--4fbd793d-a70e-5920-bc0e-8d5f711e3c93",
+      "created": "2026-06-13T00:00:00.000Z",
+      "modified": "2026-06-13T00:00:00.000Z",
+      "name": "Insurance Sector",
+      "identity_class": "class",
+      "sectors": ["insurance"]
+    },
+    {
+      "type": "identity",
+      "spec_version": "2.1",
+      "id": "identity--0d1afe49-1976-5ac9-903c-fe724e9a5c41",
+      "created": "2026-06-13T00:00:00.000Z",
+      "modified": "2026-06-13T00:00:00.000Z",
+      "name": "Manufacturing Sector",
+      "identity_class": "class",
+      "sectors": ["manufacturing"]
+    },
+    {
+      "type": "identity",
+      "spec_version": "2.1",
+      "id": "identity--33b2ffaa-6a0b-51b2-8074-75194e6dad1b",
+      "created": "2026-06-13T00:00:00.000Z",
+      "modified": "2026-06-13T00:00:00.000Z",
+      "name": "Mining Sector",
+      "identity_class": "class",
+      "sectors": ["mining"]
+    },
+    {
+      "type": "identity",
+      "spec_version": "2.1",
+      "id": "identity--724f1263-8092-53b3-be8c-6cf9a7ffdb1e",
+      "created": "2026-06-13T00:00:00.000Z",
+      "modified": "2026-06-13T00:00:00.000Z",
+      "name": "Non-Profit Sector",
+      "identity_class": "class",
+      "sectors": ["non-profit"]
+    },
+    {
+      "type": "identity",
+      "spec_version": "2.1",
+      "id": "identity--62892d6d-c25d-571d-afcc-ec952d896c38",
+      "created": "2026-06-13T00:00:00.000Z",
+      "modified": "2026-06-13T00:00:00.000Z",
+      "name": "Pharmaceuticals Sector",
+      "identity_class": "class",
+      "sectors": ["pharmaceuticals"]
+    },
+    {
+      "type": "identity",
+      "spec_version": "2.1",
+      "id": "identity--393875ec-c25a-5e3d-9c85-b98e44879f18",
+      "created": "2026-06-13T00:00:00.000Z",
+      "modified": "2026-06-13T00:00:00.000Z",
+      "name": "Retail Sector",
+      "identity_class": "class",
+      "sectors": ["retail"]
+    },
+    {
+      "type": "identity",
+      "spec_version": "2.1",
+      "id": "identity--6232ff59-4af5-5c71-82e3-a847c3b7bfc4",
+      "created": "2026-06-13T00:00:00.000Z",
+      "modified": "2026-06-13T00:00:00.000Z",
+      "name": "Technology Sector",
+      "identity_class": "class",
+      "sectors": ["technology"]
+    },
+    {
+      "type": "identity",
+      "spec_version": "2.1",
+      "id": "identity--4b7aa580-b13c-568b-b3a8-6c5afce591b1",
+      "created": "2026-06-13T00:00:00.000Z",
+      "modified": "2026-06-13T00:00:00.000Z",
+      "name": "Telecommunications Sector",
+      "identity_class": "class",
+      "sectors": ["telecommunications"]
+    },
+    {
+      "type": "identity",
+      "spec_version": "2.1",
+      "id": "identity--d8485158-9c2d-5a31-b7eb-d2d3006c03c0",
+      "created": "2026-06-13T00:00:00.000Z",
+      "modified": "2026-06-13T00:00:00.000Z",
+      "name": "Transportation Sector",
+      "identity_class": "class",
+      "sectors": ["transportation"]
+    },
+    {
+      "type": "identity",
+      "spec_version": "2.1",
+      "id": "identity--6da06763-4333-513f-af48-f7be1d5c161d",
+      "created": "2026-06-13T00:00:00.000Z",
+      "modified": "2026-06-13T00:00:00.000Z",
+      "name": "Utilities Sector",
+      "identity_class": "class",
+      "sectors": ["utilities"]
+    }
+  ]
+}

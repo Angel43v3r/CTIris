@@ -132,6 +132,7 @@ def upsert(engine: sa.Engine, objects: list[dict]) -> int:
 
 
 _SAMPLE_BUNDLE = os.path.join(os.path.dirname(__file__), "seeds", "sample_relationships.json")
+_SECTOR_IDENTITIES = os.path.join(os.path.dirname(__file__), "seeds", "sector_identities.json")
 
 
 def seed_local_bundle(engine: sa.Engine, path: str) -> None:
@@ -155,6 +156,24 @@ def seed_local_bundle(engine: sa.Engine, path: str) -> None:
     print(f"Sample bundle: {inserted} inserted, {skipped} already existed (skipped).")
 
 
+def seed_sector_identities(engine: sa.Engine, path: str) -> None:
+    """Upsert the canonical sector identity set. Idempotent — existing rows are skipped."""
+    if not os.path.exists(path):
+        print(f"Sector identities file not found: {path}", file=sys.stderr)
+        return
+
+    with open(path) as f:
+        bundle = json.load(f)
+
+    objects = bundle.get("objects", [])
+    if not objects:
+        return
+
+    inserted = upsert(engine, objects)
+    skipped = len(objects) - inserted
+    print(f"Sector identities: {inserted} inserted, {skipped} already existed (skipped).")
+
+
 def _seed_type(engine: sa.Engine, archive_bytes: bytes, stix_type: str) -> None:
     """Upsert all objects of a given STIX type from the archive. Always runs — idempotent."""
     objects = extract_objects(archive_bytes, stix_type)
@@ -172,9 +191,8 @@ def main() -> None:
     engine = _get_engine()
     archive_bytes = _download_archive()
 
-    for stix_type in ("location", "identity"):
-        _seed_type(engine, archive_bytes, stix_type)
-
+    _seed_type(engine, archive_bytes, "location")
+    seed_sector_identities(engine, _SECTOR_IDENTITIES)
     seed_local_bundle(engine, _SAMPLE_BUNDLE)
 
 
