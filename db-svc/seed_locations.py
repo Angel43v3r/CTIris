@@ -1,10 +1,13 @@
 """
-seed_locations.py — Import STIX location and identity objects from the OASIS Open
-cti-stix-common-objects repository into the stix_objects table.
+seed_locations.py — Seed the stix_objects table with reference data on startup.
 
-Downloads the repo as a tar.gz archive (one HTTP request, no API key or
-rate-limit risk) and upserts every file found under objects/location/ and
-objects/identity/. Existing rows are left untouched (ON CONFLICT DO NOTHING).
+Does three things in order:
+1. Downloads the oasis-open/cti-stix-common-objects repo as a tar.gz archive
+   and upserts every file found under objects/location/ (countries, US states,
+   regions). Existing rows are left untouched (ON CONFLICT DO NOTHING).
+2. Upserts the canonical industry-sector-ov identity objects from
+   seeds/sector_identities.json (one identity per sector, identity_class=class).
+3. Upserts any additional seed data from seeds/sample_relationships.json.
 
 Usage:
     docker compose run --rm db-svc python seed_locations.py
@@ -100,7 +103,7 @@ def extract_objects(archive_bytes: bytes, stix_type: str) -> list[dict]:
 
 
 def upsert(engine: sa.Engine, objects: list[dict]) -> int:
-    """Upsert location objects into stix_objects. Returns number inserted."""
+    """Insert STIX objects into stix_objects, skipping duplicates. Returns number inserted."""
     rows = [
         {
             "stix_id": obj["id"],
