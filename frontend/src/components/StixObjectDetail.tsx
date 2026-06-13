@@ -26,7 +26,6 @@ import { getPropertyDescription, getObjectDescription, getRelationshipDescriptio
 
 interface Props {
   stixId: string;
-  onDisplayNameChange?: (displayName: string) => void;
 }
 
 interface RequestData<T> {
@@ -64,11 +63,6 @@ function formatDateShort(d: string | null | undefined): string {
   if (!d) return '—';
   const parsed = new Date(d);
   return isNaN(parsed.getTime()) ? d : parsed.toLocaleDateString();
-}
-
-function getDisplayName(stix: StixObject, fallback: string): string {
-  const props = (stix.properties ?? {}) as Record<string, unknown>;
-  return (props.name as string | undefined) ?? fallback;
 }
 
 function isStixId(value: string): boolean {
@@ -463,7 +457,7 @@ function RelationshipTable({
 
 // ── Main component ────────────────────────────────────────────────────────────
 
-export default function StixObjectDetail({ stixId, onDisplayNameChange }: Props) {
+export default function StixObjectDetail({ stixId }: Props) {
   const navigate = useNavigate();
 
   const [stixData, setStixData] = useState<RequestData<StixObject> | null>(null);
@@ -478,7 +472,6 @@ export default function StixObjectDetail({ stixId, onDisplayNameChange }: Props)
       .then((nextStix) => {
         setStixData({ requestId: stixId, data: nextStix });
         setObjectError(null);
-        onDisplayNameChange?.(getDisplayName(nextStix, stixId));
       })
       .catch(e => { if (e.name !== 'AbortError') setObjectError({ requestId: stixId, message: String(e) }); });
 
@@ -490,7 +483,7 @@ export default function StixObjectDetail({ stixId, onDisplayNameChange }: Props)
       .catch(e => { if (e.name !== 'AbortError') setRelsError({ requestId: stixId, message: String(e) }); });
 
     return () => controller.abort();
-  }, [onDisplayNameChange, stixId]);
+  }, [stixId]);
 
   // ── Derive display values ─────────────────────────────────────────────────
 
@@ -538,10 +531,6 @@ export default function StixObjectDetail({ stixId, onDisplayNameChange }: Props)
       {!objectLoading && !objectErrorMessage && stix && (
         <>
           {/* Object name */}
-          <Typography sx={{ color: COLORS.textPrimary, fontFamily: 'monospace', fontSize: '0.9rem', mb: 2, wordBreak: 'break-all' }}>
-            {props.name as string || stix.stix_id}
-          </Typography>
-
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, flexWrap: 'wrap' }}>
             <Button
               variant="outlined"
